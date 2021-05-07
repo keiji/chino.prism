@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using DryIoc;
 using Foundation;
 using UIKit;
 
@@ -25,7 +25,14 @@ namespace Chino.Prism.iOS
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 
+            App.InitializeContainer(RegisterPlatformService);
+
             return base.FinishedLaunching(app, options);
+        }
+
+        private void RegisterPlatformService(IContainer container)
+        {
+            container.Register<AbsExposureNotificationClient, ExposureNotificationClient>(Reuse.Singleton);
         }
     }
 }
