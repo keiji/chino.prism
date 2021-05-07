@@ -23,13 +23,13 @@ namespace Chino.Prism.Droid
 
             App.InitializeContainer(RegisterPlatformService);
 
-            var exposureNotificationClient = ContainerLocator.Container.Resolve<AbsExposureNotificationClient>() as ExposureNotificationClient;
+            var exposureNotificationClient = ContainerLocator.Container.Resolve<AbsExposureNotificationClient>() as ExposureNotificationClientWrapper;
             exposureNotificationClient.Init(this);
         }
 
         private void RegisterPlatformService(IContainer container)
         {
-            container.Register<AbsExposureNotificationClient, ExposureNotificationClient>(Reuse.Singleton);
+            container.Register<AbsExposureNotificationClient, ExposureNotificationClientWrapper>(Reuse.Singleton);
         }
     }
 }
