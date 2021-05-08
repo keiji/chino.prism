@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using DryIoc;
 using Prism.DryIoc;
 using Prism.Ioc;

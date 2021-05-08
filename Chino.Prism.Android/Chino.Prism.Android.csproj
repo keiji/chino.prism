@@ -58,6 +58,9 @@
     <PackageReference Include="Chino.Android">
       <Version>1.0.0-alpha01</Version>
     </PackageReference>
+    <PackageReference Include="Prism.DryIoc.Extensions">
+      <Version>8.0.62</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -65,6 +68,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MainApplication.cs" />
     <Compile Include="ExposureNotificationClientWrapper.cs" />
+    <Compile Include="ExposureNotificationEventSubject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

@@ -11,8 +11,11 @@
     <StackLayout>
         <Button
             Command="{Binding EnableExposureNotificationCommand}"
-            Text="Enable Exposure Notification" />
-
+            Text="{Binding EnableExposureNotificationLabel}" />
+        <Button
+            Command="{Binding GetTemporaryExposureKeysCommand}"
+            Text="Get TemporaryExposureKeys" />
+        <Label Text="{Binding TEKsLabel}" />
     </StackLayout>
 
 </ContentPage>
