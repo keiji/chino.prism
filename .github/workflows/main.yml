@@ -1,0 +1,67 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the ci branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - name: Select Xcode version
+      run: |
+        sudo xcode-select -s '/Applications/Xcode_12.4.app/Contents/Developer'
+        xcodebuild -version
+    - name: Setup Xamarin
+      # You may pin to the exact commit or the version.
+      # uses: maxim-lobanov/setup-xamarin@00b44a3ef9e2d1953010956de2022e8d095a196c
+      uses: maxim-lobanov/setup-xamarin@v1
+      with:
+        mono-version: 6.12 # specify version in '<major>.<minor>' format
+        xamarin-ios-version: 14.0 # specify version in '<major>' format
+        xamarin-mac-version: latest # specify 'latest' keyword to pick up the latest available version
+        xamarin-android-version: 11.2 # specify full version; it is not recomended option because your pipeline can be broken suddenly in future
+        xcode-version: 12
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Cache
+      uses: actions/cache@v2.1.5
+      env:
+        cache-name: cache-nuget-packages
+      with:
+        # A list of files, directories, and wildcard patterns to cache and restore
+        path: ${{ github.workspace }}/.nuget/packages
+        # An explicit key for restoring and saving the cache
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.csproj') }}
+    - name: Prepare
+      run: |
+        nuget restore Chino.Prism/Chino.Prism.csproj
+        nuget restore Chino.Prism.Android/Chino.Prism.Android.csproj
+        nuget restore Chino.Prism.iOS/Chino.Prism.iOS.csproj
+    - name: AndroidDebug
+      run: |
+        msbuild ./Chino.Prism.Android/Chino.Prism.Android.csproj /t:Rebuild /p:Configuration=Debug
+    - name: AndroidRelease
+      run: |
+        msbuild ./Chino.Prism.Android/Chino.Prism.Android.csproj /t:Rebuild /p:Configuration=Release
+    - name: iOSDebug
+      run: |
+        msbuild ./Chino.Prism.iOS/Chino.Prism.iOS.csproj /t:Rebuild /p:Configuration=Debug
+    - name: iOSRelease
+      run: |
+        msbuild ./Chino.Prism.iOS/Chino.Prism.iOS.csproj /t:Rebuild /p:Configuration=Release
