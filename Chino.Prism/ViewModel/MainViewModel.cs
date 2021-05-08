@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Ioc;
 
@@ -17,6 +18,9 @@ namespace Chino.Prism.ViewModel
 
         public DelegateCommand EnableExposureNotificationCommand { get; }
         public DelegateCommand GetTemporaryExposureKeysCommand { get; }
+        public DelegateCommand ProvideDiagnosisKeysCommand { get; }
+        public DelegateCommand PreauthorizedKeysCommand { get; }
+        public DelegateCommand ReqeustReleaseKeysCommand { get; }
 
         public bool IsEnabled = false;
 
@@ -24,7 +28,7 @@ namespace Chino.Prism.ViewModel
         {
             get
             {
-                return IsEnabled ? "EN Enabled" : "EN Disabled";
+                return IsEnabled ? "EN Enable" : "EN Disable";
             }
         }
 
@@ -45,6 +49,14 @@ namespace Chino.Prism.ViewModel
 
             EnableExposureNotificationCommand = new DelegateCommand(EnableExposureNotification);
             GetTemporaryExposureKeysCommand = new DelegateCommand(GetTemporaryExposureKeys);
+            ProvideDiagnosisKeysCommand = new DelegateCommand(ProvideDiagnosisKeys);
+            PreauthorizedKeysCommand = new DelegateCommand(PreauthorizedKeys);
+            ReqeustReleaseKeysCommand = new DelegateCommand(ReqeustReleaseKeys);
+
+            Task.Run(async () => {
+                IsEnabled = await ExposureNotificationClient.IsEnabled();
+                PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
+            });
         }
 
         private async void EnableExposureNotification()
@@ -58,7 +70,29 @@ namespace Chino.Prism.ViewModel
         {
             Debug.Print("GetTemporaryExposureKeys is clicked.");
 
+            TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistory();
+            PropertyChanged(this, new PropertyChangedEventArgs("TEKsLabel"));
+        }
+
+        private async void ProvideDiagnosisKeys()
+        {
+            Debug.Print("ProvideDiagnosisKeys is clicked.");
+
             await ExposureNotificationClient.GetTemporaryExposureKeyHistory();
+        }
+
+        private async void PreauthorizedKeys()
+        {
+            Debug.Print("PreauthorizedKeys is clicked.");
+
+            await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyHistory();
+        }
+
+        private async void ReqeustReleaseKeys()
+        {
+            Debug.Print("ReqeustReleaseKeys is clicked.");
+
+            await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyRelease();
         }
 
         public void OnEnabled()
@@ -75,7 +109,6 @@ namespace Chino.Prism.ViewModel
 
         public void OnPreauthorizeAllowed()
         {
-            throw new System.NotImplementedException();
         }
     }
 }

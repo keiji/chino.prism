@@ -15,6 +15,16 @@
         <Button
             Command="{Binding GetTemporaryExposureKeysCommand}"
             Text="Get TemporaryExposureKeys" />
+        <Button
+            Command="{Binding ProvideDiagnosisKeysCommand}"
+            Text="Provide Diagnoiss Keys" />
+        <Button
+            Command="{Binding PreauthorizedKeysCommand}"
+            Text="Request Preauthorized Keys" />
+        <Button
+            Command="{Binding ReqeustReleaseKeysCommand}"
+            Text="Request Release Keys" />
+
         <Label Text="{Binding TEKsLabel}" />
     </StackLayout>
 

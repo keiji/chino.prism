@@ -12,7 +12,7 @@ namespace Chino.Prism.Droid
         public const int REQUEST_GET_TEK_HISTORY = 0x11;
         public const int REQUEST_PREAUTHORIZE_KEYS = 0x12;
 
-        private readonly ExposureNotificationClient Client = new ExposureNotificationClient();
+        public readonly ExposureNotificationClient Client = new ExposureNotificationClient();
 
         public void Init(Context applicationContext)
         {
@@ -100,7 +100,17 @@ namespace Chino.Prism.Droid
 
         public override async Task RequestPreAuthorizedTemporaryExposureKeyRelease()
         {
-            await Client.RequestPreAuthorizedTemporaryExposureKeyRelease();
+            try
+            {
+                await Client.RequestPreAuthorizedTemporaryExposureKeyRelease();
+            }
+            catch (ApiException apiException)
+            {
+                if (apiException.StatusCode == CommonStatusCodes.ResolutionRequired)
+                {
+                    apiException.Status.StartResolutionForResult(Platform.CurrentActivity, REQUEST_PREAUTHORIZE_KEYS);
+                }
+            }
         }
     }
 }
