@@ -45,22 +45,22 @@ namespace Chino.Prism.Droid
 
         public void ExposureDetected(IExposureSummary exposureSummary, IList<IExposureInformation> exposureInformations)
         {
-            D.Print("ExposureDetected ExposureInformation");
+            D.Print("# ExposureDetected ExposureInformation");
         }
 
         public void ExposureDetected(IList<IDailySummary> dailySummaries, IList<IExposureWindow> exposureWindows)
         {
-            D.Print("ExposureDetected ExposureWindow");
+            D.Print("# ExposureDetected ExposureWindow");
         }
 
         public void ExposureNotDetected()
         {
-            D.Print("ExposureNotDetected");
+            D.Print("# ExposureNotDetected");
         }
 
         public void TemporaryExposureKeyReleased(IList<ITemporaryExposureKey> temporaryExposureKeys)
         {
-            D.Print("TemporaryExposureKeyReleased");
+            D.Print("# TemporaryExposureKeyReleased");
 
             foreach (ITemporaryExposureKey tek in temporaryExposureKeys)
             {

@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Ioc;
+using Xamarin.Essentials;
 
 namespace Chino.Prism.ViewModel
 {
     public class MainViewModel : INotifyPropertyChanged, IExposureNotificationEventSubject.IExposureNotificationEventCallback
     {
+        private const string DIAGNOSIS_KEYS_DIR = "diagnosis_keys";
+
         private readonly AbsExposureNotificationClient ExposureNotificationClient = ContainerLocator.Container.Resolve<AbsExposureNotificationClient>();
         private readonly IExposureNotificationEventSubject ExposureNotificationEventSubject = ContainerLocator.Container.Resolve<IExposureNotificationEventSubject>();
 
@@ -28,7 +32,7 @@ namespace Chino.Prism.ViewModel
         {
             get
             {
-                return IsEnabled ? "EN Enable" : "EN Disable";
+                return IsEnabled ? "EN is Enabled" : "Click to turn EN on";
             }
         }
 
@@ -53,7 +57,8 @@ namespace Chino.Prism.ViewModel
             PreauthorizedKeysCommand = new DelegateCommand(PreauthorizedKeys);
             ReqeustReleaseKeysCommand = new DelegateCommand(ReqeustReleaseKeys);
 
-            Task.Run(async () => {
+            Task.Run(async () =>
+            {
                 IsEnabled = await ExposureNotificationClient.IsEnabled();
                 PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
             });
@@ -78,7 +83,27 @@ namespace Chino.Prism.ViewModel
         {
             Debug.Print("ProvideDiagnosisKeys is clicked.");
 
-            await ExposureNotificationClient.GetTemporaryExposureKeyHistory();
+            var appDir = FileSystem.AppDataDirectory;
+            var diagnosisKeysDir = Path.Combine(appDir, DIAGNOSIS_KEYS_DIR);
+
+            if (!Directory.Exists(diagnosisKeysDir))
+            {
+                Directory.CreateDirectory(diagnosisKeysDir);
+            }
+
+            var pathList = Directory.GetFiles(diagnosisKeysDir);
+            if (pathList.Count() == 0)
+            {
+                Debug.Print($"Directoery {diagnosisKeysDir} is empty");
+                return;
+            }
+
+            foreach(var path in pathList)
+            {
+                Debug.Print($"{path}");
+            }
+
+            await ExposureNotificationClient.ProvideDiagnosisKeys(pathList.ToList<string>());
         }
 
         private async void PreauthorizedKeys()

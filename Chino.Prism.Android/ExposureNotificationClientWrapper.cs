@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Gms.Common.Apis;
@@ -70,17 +71,38 @@ namespace Chino.Prism.Droid
 
         public override async Task ProvideDiagnosisKeys(List<string> keyFiles)
         {
-            await Client.ProvideDiagnosisKeys(keyFiles);
+            try
+            {
+                await Client.ProvideDiagnosisKeys(keyFiles);
+            }
+            catch (ApiException apiException)
+            {
+                Debug.Print($"ApiException StatusCode {apiException.StatusCode}");
+            }
         }
 
         public override async Task ProvideDiagnosisKeys(List<string> keyFiles, ExposureConfiguration configuration)
         {
-            await Client.ProvideDiagnosisKeys(keyFiles, configuration);
+            try
+            {
+                await Client.ProvideDiagnosisKeys(keyFiles, configuration);
+            }
+            catch (ApiException apiException)
+            {
+                Debug.Print($"ApiException StatusCode {apiException.StatusCode}");
+            }
         }
 
         public override async Task ProvideDiagnosisKeys(List<string> keyFiles, ExposureConfiguration configuration, string token)
         {
-            await Client.ProvideDiagnosisKeys(keyFiles, configuration, token);
+            try
+            {
+                await Client.ProvideDiagnosisKeys(keyFiles, configuration, token);
+            }
+            catch (ApiException apiException)
+            {
+                Debug.Print($"ApiException StatusCode {apiException.StatusCode}");
+            }
         }
 
         public override async Task RequestPreAuthorizedTemporaryExposureKeyHistory()
