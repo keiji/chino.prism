@@ -59,6 +59,8 @@ namespace Chino.Prism.ViewModel
 
             Task.Run(async () =>
             {
+                await Task.Delay(1000);
+
                 IsEnabled = await ExposureNotificationClient.IsEnabled();
                 PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
             });
