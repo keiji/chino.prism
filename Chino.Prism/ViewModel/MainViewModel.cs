@@ -61,23 +61,23 @@ namespace Chino.Prism.ViewModel
             {
                 await Task.Delay(1000);
 
-                IsEnabled = await ExposureNotificationClient.IsEnabled();
+                IsEnabled = await ExposureNotificationClient.IsEnabledAsync();
                 PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
             });
         }
 
         private async void EnableExposureNotification()
         {
-            Debug.Print("EnableExposureNotification is clicked. " + await ExposureNotificationClient.GetVersion());
+            Debug.Print("EnableExposureNotification is clicked. " + await ExposureNotificationClient.GetVersionAsync());
 
-            await ExposureNotificationClient.Start();
+            await ExposureNotificationClient.StartAsync();
         }
 
         private async void GetTemporaryExposureKeys()
         {
             Debug.Print("GetTemporaryExposureKeys is clicked.");
 
-            TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistory();
+            TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
             PropertyChanged(this, new PropertyChangedEventArgs("TEKsLabel"));
         }
 
@@ -105,21 +105,21 @@ namespace Chino.Prism.ViewModel
                 Debug.Print($"{path}");
             }
 
-            await ExposureNotificationClient.ProvideDiagnosisKeys(pathList.ToList<string>());
+            await ExposureNotificationClient.ProvideDiagnosisKeysAsync(pathList.ToList<string>());
         }
 
         private async void PreauthorizedKeys()
         {
             Debug.Print("PreauthorizedKeys is clicked.");
 
-            await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyHistory();
+            await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyHistoryAsync();
         }
 
         private async void ReqeustReleaseKeys()
         {
             Debug.Print("ReqeustReleaseKeys is clicked.");
 
-            await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyRelease();
+            await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
         }
 
         public void OnEnabled()
@@ -130,7 +130,7 @@ namespace Chino.Prism.ViewModel
 
         public async void OnGetTekHistoryAllowed()
         {
-            TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistory();
+            TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
             PropertyChanged(this, new PropertyChangedEventArgs("TEKsLabel"));
         }
 

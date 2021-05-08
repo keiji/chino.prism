@@ -20,11 +20,11 @@ namespace Chino.Prism.Droid
             Client.Init(applicationContext);
         }
 
-        public override async Task Start()
+        public override async Task StartAsync()
         {
             try
             {
-                await Client.Start();
+                await Client.StartAsync();
             }
             catch (ApiException apiException)
             {
@@ -35,18 +35,18 @@ namespace Chino.Prism.Droid
             }
         }
 
-        public override async Task Stop() => await Client.Stop();
+        public override async Task StopAsync() => await Client.StopAsync();
 
-        public override async Task<IExposureNotificationStatus> GetStatus()
+        public override async Task<IExposureNotificationStatus> GetStatusAsync()
         {
-            return await Client.GetStatus();
+            return await Client.GetStatusAsync();
         }
 
-        public override async Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistory()
+        public override async Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistoryAsync()
         {
             try
             {
-                return await Client.GetTemporaryExposureKeyHistory();
+                return await Client.GetTemporaryExposureKeyHistoryAsync();
             }
             catch (ApiException apiException)
             {
@@ -59,21 +59,21 @@ namespace Chino.Prism.Droid
             return new List<ITemporaryExposureKey>();
         }
 
-        public override async Task<long> GetVersion()
+        public override async Task<long> GetVersionAsync()
         {
-            return await Client.GetVersion();
+            return await Client.GetVersionAsync();
         }
 
-        public override async Task<bool> IsEnabled()
+        public override async Task<bool> IsEnabledAsync()
         {
-            return await Client.IsEnabled();
+            return await Client.IsEnabledAsync();
         }
 
-        public override async Task ProvideDiagnosisKeys(List<string> keyFiles)
+        public override async Task ProvideDiagnosisKeysAsync(List<string> keyFiles)
         {
             try
             {
-                await Client.ProvideDiagnosisKeys(keyFiles);
+                await Client.ProvideDiagnosisKeysAsync(keyFiles);
             }
             catch (ApiException apiException)
             {
@@ -81,11 +81,11 @@ namespace Chino.Prism.Droid
             }
         }
 
-        public override async Task ProvideDiagnosisKeys(List<string> keyFiles, ExposureConfiguration configuration)
+        public override async Task ProvideDiagnosisKeysAsync(List<string> keyFiles, ExposureConfiguration configuration)
         {
             try
             {
-                await Client.ProvideDiagnosisKeys(keyFiles, configuration);
+                await Client.ProvideDiagnosisKeysAsync(keyFiles, configuration);
             }
             catch (ApiException apiException)
             {
@@ -93,11 +93,11 @@ namespace Chino.Prism.Droid
             }
         }
 
-        public override async Task ProvideDiagnosisKeys(List<string> keyFiles, ExposureConfiguration configuration, string token)
+        public override async Task ProvideDiagnosisKeysAsync(List<string> keyFiles, ExposureConfiguration configuration, string token)
         {
             try
             {
-                await Client.ProvideDiagnosisKeys(keyFiles, configuration, token);
+                await Client.ProvideDiagnosisKeysAsync(keyFiles, configuration, token);
             }
             catch (ApiException apiException)
             {
@@ -105,11 +105,11 @@ namespace Chino.Prism.Droid
             }
         }
 
-        public override async Task RequestPreAuthorizedTemporaryExposureKeyHistory()
+        public override async Task RequestPreAuthorizedTemporaryExposureKeyHistoryAsync()
         {
             try
             {
-                await Client.RequestPreAuthorizedTemporaryExposureKeyHistory();
+                await Client.RequestPreAuthorizedTemporaryExposureKeyHistoryAsync();
             }
             catch (ApiException apiException)
             {
@@ -120,11 +120,11 @@ namespace Chino.Prism.Droid
             }
         }
 
-        public override async Task RequestPreAuthorizedTemporaryExposureKeyRelease()
+        public override async Task RequestPreAuthorizedTemporaryExposureKeyReleaseAsync()
         {
             try
             {
-                await Client.RequestPreAuthorizedTemporaryExposureKeyRelease();
+                await Client.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
             }
             catch (ApiException apiException)
             {
