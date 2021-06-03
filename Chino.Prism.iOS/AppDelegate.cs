@@ -31,6 +31,7 @@ namespace Chino.Prism.iOS
 
             AbsExposureNotificationClient.Handler = this;
             ExposureNotificationClient.Value.Init("Chino.Prism.iOS");
+            ExposureNotificationClient.Value.IsTest = true;
 
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
