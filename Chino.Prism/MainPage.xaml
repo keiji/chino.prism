@@ -4,29 +4,34 @@
              xmlns:viewModels="clr-namespace:Chino.Prism.ViewModel"
              x:Class="Chino.Prism.MainPage">
 
-    <ContentPage.BindingContext>
-        <viewModels:MainViewModel />
-    </ContentPage.BindingContext>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Command="{Binding ConfigCommand}"
+            Text="Config"/>
+    </ContentPage.ToolbarItems>
 
-    <StackLayout
-        Padding="16,32">
-        <Button
-            Command="{Binding EnableExposureNotificationCommand}"
-            Text="{Binding EnableExposureNotificationLabel}" />
-        <Button
-            Command="{Binding GetTemporaryExposureKeysCommand}"
-            Text="Get TemporaryExposureKeys" />
-        <Button
-            Command="{Binding ProvideDiagnosisKeysCommand}"
-            Text="Provide Diagnoiss Keys" />
-        <Button
-            Command="{Binding PreauthorizedKeysCommand}"
-            Text="Request Preauthorized Keys" />
-        <Button
-            Command="{Binding ReqeustReleaseKeysCommand}"
-            Text="Request Release Keys" />
+    <ScrollView>
+        <StackLayout
+            Padding="16,32">
+            <Button
+                Command="{Binding EnableExposureNotificationCommand}"
+                Text="{Binding EnableExposureNotificationLabel}" />
+            <Button
+                Command="{Binding GetTemporaryExposureKeysCommand}"
+                Text="Get TemporaryExposureKeys" />
+            <Button
+                Command="{Binding ProvideDiagnosisKeysCommand}"
+                Text="Provide Diagnoiss Keys" />
+            <Button
+                Command="{Binding PreauthorizedKeysCommand}"
+                Text="Request Preauthorized Keys" />
+            <Button
+                Command="{Binding ReqeustReleaseKeysCommand}"
+                Text="Request Release Keys" />
 
-        <Label Text="{Binding TEKsLabel}" />
-    </StackLayout>
+            <Label Text="{Binding TEKsLabel}" />
+        </StackLayout>
+
+    </ScrollView>
 
 </ContentPage>

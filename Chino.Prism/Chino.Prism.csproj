@@ -16,8 +16,14 @@
     <PackageReference Include="Chino.Common" Version="1.0.0-alpha04" />
     <PackageReference Include="Prism.Forms" Version="8.1.97" />
     <PackageReference Include="Prism.DryIoc.Extensions" Version="8.0.62" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ViewModel\" />
+    <Folder Include="View\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Newtonsoft.Json" />
+    <None Remove="View\" />
   </ItemGroup>
 </Project>

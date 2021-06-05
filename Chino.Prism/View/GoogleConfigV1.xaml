@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Chino.Prism.View.GoogleConfigV1">
+    <ContentView.Content>
+
+        <StackLayout>
+            <Label Text="GoogleExposureConfiguration" FontSize="Medium" Padding="0, 8, 0, 0" />
+
+            <Label Text="AttenuationScores" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding AttenuationScores}" Keyboard="Numeric" />
+
+            <Label Text="AttenuationWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding AttenuationWeight}" Keyboard="Numeric" />
+
+            <Label Text="DaysSinceLastExposureScores" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding DaysSinceLastExposureScores}" Keyboard="Numeric" />
+
+            <Label Text="DaysSinceLastExposureWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding DaysSinceLastExposureWeight}" Keyboard="Numeric" />
+
+            <Label Text="DurationAtAttenuationThresholds" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding DurationAtAttenuationThresholds}" Keyboard="Numeric" />
+
+            <Label Text="DurationScores" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding DurationScores}" Keyboard="Numeric" />
+
+            <Label Text="DurationWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding DurationWeight}" Keyboard="Numeric" />
+
+            <Label Text="MinimumRiskScore" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding MinimumRiskScore}" Keyboard="Numeric" />
+
+            <Label Text="TransmissionRiskScores" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding TransmissionRiskScores}" Keyboard="Numeric" />
+
+            <Label Text="TransmissionRiskWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding TransmissionRiskWeight}" Keyboard="Numeric" />
+
+        </StackLayout>
+
+    </ContentView.Content>
+</ContentView>

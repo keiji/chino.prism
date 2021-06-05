@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using Chino.Prism.ViewModel;
+using Xamarin.Forms;
 
 namespace Chino.Prism
 {
@@ -7,6 +8,7 @@ namespace Chino.Prism
         public MainPage()
         {
             InitializeComponent();
+            this.BindingContext = new MainViewModel(Navigation);
         }
     }
 }

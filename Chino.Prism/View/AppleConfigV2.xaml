@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Chino.Prism.View.AppleConfigV2"
+    xmlns:views="clr-namespace:Chino.Prism.View">
+    <ContentView.Content>
+        <StackLayout>
+            <Label Text="AppleExposureConfigurationV2" FontSize="Medium" Padding="0, 8, 0, 0" />
+
+            <Label Text="AttenuationDurationThresholds" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding AttenuationDurationThresholds}" Keyboard="Numeric" />
+
+            <Label Text="ImmediateDurationWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding ImmediateDurationWeight}" Keyboard="Numeric" />
+
+            <Label Text="NearDurationWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding NearDurationWeight}" Keyboard="Numeric" />
+
+            <Label Text="MediumDurationWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding MediumDurationWeight}" Keyboard="Numeric" />
+
+            <Label Text="OtherDurationWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding OtherDurationWeight}" Keyboard="Numeric" />
+
+            <Label Text="DaysSinceLastExposureThreshold" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding DaysSinceLastExposureThreshold}" Keyboard="Numeric" />
+
+            <Label Text="InfectiousnessForDaysSinceOnsetOfSymptoms" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Grid x:Name="InfectiousnessForDaysSinceOnsetOfSymptomsGrid"/>
+
+            <Label Text="InfectiousnessWhenDaysSinceOnsetMissing" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <views:InfectiousnessPicker
+                x:Name="InfectiousnessWhenDaysSinceOnsetMissing"
+            />
+
+            <Label Text="InfectiousnessHighWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding InfectiousnessHighWeight}" Keyboard="Numeric" />
+
+            <Label Text="InfectiousnessStandardWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding InfectiousnessStandardWeight}" Keyboard="Numeric" />
+
+            <Label Text="ReportTypeConfirmedClinicalDiagnosisWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding ReportTypeConfirmedClinicalDiagnosisWeight}" Keyboard="Numeric" />
+
+            <Label Text="ReportTypeConfirmedTestWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding ReportTypeConfirmedTestWeight}" Keyboard="Numeric" />
+
+            <Label Text="ReportTypeRecursiveWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding ReportTypeRecursiveWeight}" Keyboard="Numeric" />
+
+            <Label Text="ReportTypeSelfReportedWeight" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding ReportTypeSelfReportedWeight}" Keyboard="Numeric" />
+
+            <Label Text="ReportTypeNoneMap" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <views:ReportTypePicker
+                x:Name="ReportTypeNoneMap"
+            />
+
+        </StackLayout>
+        
+    </ContentView.Content>
+</ContentView>

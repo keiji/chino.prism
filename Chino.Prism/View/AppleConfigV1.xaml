@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Chino.Prism.View.AppleConfigV1">
+    <ContentView.Content>
+
+        <StackLayout>
+            <Label Text="AppleExposureConfigurationV1" FontSize="Medium" Padding="0, 8, 0, 0" />
+
+            <Label Text="AttenuationLevelValues" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding AttenuationLevelValues}" Keyboard="Numeric" />
+
+            <Label Text="DaysSinceLastExposureLevelValues" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding DaysSinceLastExposureLevelValues}" Keyboard="Numeric" />
+
+            <Label Text="DurationLevelValues" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding DurationLevelValues}" Keyboard="Numeric" />
+
+            <Label Text="TransmissionRiskLevelValues" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding TransmissionRiskLevelValues}" Keyboard="Numeric" />
+
+            <Label Text="MinimumRiskScore" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding MinimumRiskScore}" Keyboard="Numeric" />
+
+            <Label Text="MinimumRiskScoreFullRange" FontSize="Caption" Padding="0, 8, 0, 0" />
+            <Entry Text="{Binding MinimumRiskScoreFullRange}" Keyboard="Numeric" />
+
+        </StackLayout>
+
+    </ContentView.Content>
+</ContentView>

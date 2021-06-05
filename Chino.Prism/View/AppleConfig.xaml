@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Chino.Prism.View.AppleConfig"
+    xmlns:views="clr-namespace:Chino.Prism.View">
+    <ContentView.Content>
+
+        <StackLayout>
+            <Label Text="Apple EN API" FontSize="Caption" />
+            <Picker>
+              <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                  <x:String>V1</x:String>
+                  <x:String>V2</x:String>
+                </x:Array>
+              </Picker.ItemsSource>
+            </Picker>
+
+            <views:AppleConfigV1 />
+
+            <views:AppleConfigV2 />
+        </StackLayout>
+
+    </ContentView.Content>
+</ContentView>

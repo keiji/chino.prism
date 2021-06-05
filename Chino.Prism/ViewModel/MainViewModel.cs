@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Ioc;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace Chino.Prism.ViewModel
 {
@@ -25,6 +26,8 @@ namespace Chino.Prism.ViewModel
         public DelegateCommand ProvideDiagnosisKeysCommand { get; }
         public DelegateCommand PreauthorizedKeysCommand { get; }
         public DelegateCommand ReqeustReleaseKeysCommand { get; }
+
+        public DelegateCommand ConfigCommand { get; }
 
         public bool IsEnabled = false;
 
@@ -47,8 +50,12 @@ namespace Chino.Prism.ViewModel
             }
         }
 
-        public MainViewModel()
+        private readonly INavigation _navigation;
+
+        public MainViewModel(INavigation navigation)
         {
+            _navigation = navigation;
+
             ExposureNotificationEventSubject.AddObserver(this);
 
             EnableExposureNotificationCommand = new DelegateCommand(EnableExposureNotification);
@@ -56,6 +63,8 @@ namespace Chino.Prism.ViewModel
             ProvideDiagnosisKeysCommand = new DelegateCommand(ProvideDiagnosisKeys);
             PreauthorizedKeysCommand = new DelegateCommand(PreauthorizedKeys);
             ReqeustReleaseKeysCommand = new DelegateCommand(ReqeustReleaseKeys);
+
+            ConfigCommand = new DelegateCommand(Config);
 
             Task.Run(async () =>
             {
@@ -120,6 +129,12 @@ namespace Chino.Prism.ViewModel
             Debug.Print("ReqeustReleaseKeys is clicked.");
 
             await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
+        }
+
+        private async void Config()
+        {
+            Debug.Print("Config is clicked.");
+            await _navigation.PushAsync(new ConfigPage());
         }
 
         public void OnEnabled()

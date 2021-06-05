@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Chino.Prism.View.GoogleConfig"
+    xmlns:views="clr-namespace:Chino.Prism.View">
+    <ContentView.Content>
+
+        <StackLayout>
+            <Label Text="Google EN API" FontSize="Caption" />
+            <Picker x:Name="ApiVersion" SelectedItem="{Binding Label}">
+              <Picker.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                  <x:String>Legacy V1</x:String>
+                  <x:String>ExposureWindow mode</x:String>
+                </x:Array>
+              </Picker.ItemsSource>
+            </Picker>
+
+            <views:GoogleConfigV1 />
+
+            <views:GoogleConfigV2 />
+        </StackLayout>
+
+    </ContentView.Content>
+</ContentView>

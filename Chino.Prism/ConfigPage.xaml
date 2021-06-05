@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Chino.Prism.ConfigPage"
+             xmlns:views="clr-namespace:Chino.Prism.View">
+
+    <ScrollView Padding="16">
+        <StackLayout x:Name="Container">
+            <Label Text="Configuration Name" FontSize="Caption" />
+            <Entry Text="" />
+
+            <views:AppleConfig IsVisible="{Binding IsAppleConfigVisible}" />
+            <views:GoogleConfig IsVisible="{Binding IsGoogleConfigVisible}" />
+
+        </StackLayout>
+
+    </ScrollView>
+</ContentPage>
