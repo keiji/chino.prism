@@ -19,6 +19,9 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: macos-latest
+    strategy:
+      matrix:
+        Configuration: [Debug, Release]
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -53,15 +56,9 @@ jobs:
         nuget restore Chino.Prism/Chino.Prism.csproj
         nuget restore Chino.Prism.Android/Chino.Prism.Android.csproj
         nuget restore Chino.Prism.iOS/Chino.Prism.iOS.csproj
-    - name: AndroidDebug
+    - name: Android
       run: |
-        msbuild ./Chino.Prism.Android/Chino.Prism.Android.csproj /t:Rebuild /p:Configuration=Debug
-    - name: AndroidRelease
+        msbuild ./Chino.Prism.Android/Chino.Prism.Android.csproj /t:Rebuild /p:Configuration=${{ matrix.Configuration }}
+    - name: iOS
       run: |
-        msbuild ./Chino.Prism.Android/Chino.Prism.Android.csproj /t:Rebuild /p:Configuration=Release
-    - name: iOSDebug
-      run: |
-        msbuild ./Chino.Prism.iOS/Chino.Prism.iOS.csproj /t:Rebuild /p:Configuration=Debug
-    - name: iOSRelease
-      run: |
-        msbuild ./Chino.Prism.iOS/Chino.Prism.iOS.csproj /t:Rebuild /p:Configuration=Release
+        msbuild ./Chino.Prism.iOS/Chino.Prism.iOS.csproj /t:Rebuild /p:Configuration=${{ matrix.Configuration }}
