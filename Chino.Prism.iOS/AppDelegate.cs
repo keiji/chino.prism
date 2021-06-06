@@ -15,6 +15,8 @@ namespace Chino.Prism.iOS
     [Register("AppDelegate")]
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IExposureNotificationHandler
     {
+        private static string USER_EXPLANATION = "Chino.Prism.iOS";
+
         private Lazy<ExposureNotificationClient> ExposureNotificationClient
             = new Lazy<ExposureNotificationClient>(() => ContainerLocator.Container.Resolve<AbsExposureNotificationClient>() as ExposureNotificationClient);
 
@@ -30,7 +32,7 @@ namespace Chino.Prism.iOS
             App.InitializeContainer(RegisterPlatformService);
 
             AbsExposureNotificationClient.Handler = this;
-            ExposureNotificationClient.Value.Init("Chino.Prism.iOS");
+            ExposureNotificationClient.Value.UserExplanation = USER_EXPLANATION;
             ExposureNotificationClient.Value.IsTest = true;
 
             global::Xamarin.Forms.Forms.Init();
