@@ -13,7 +13,7 @@ namespace Chino.Prism.ViewModel
 {
     public class MainViewModel : INotifyPropertyChanged, IExposureNotificationEventSubject.IExposureNotificationEventCallback
     {
-        private const string DIAGNOSIS_KEYS_DIR = "diagnosis_keys";
+        private const string EXPOSURE_DETECTION_DIR = "exposure_detection";
 
         private readonly AbsExposureNotificationClient ExposureNotificationClient = ContainerLocator.Container.Resolve<AbsExposureNotificationClient>();
         private readonly IExposureNotificationEventSubject ExposureNotificationEventSubject = ContainerLocator.Container.Resolve<IExposureNotificationEventSubject>();
@@ -88,17 +88,17 @@ namespace Chino.Prism.ViewModel
             Debug.Print("ProvideDiagnosisKeys is clicked.");
 
             var appDir = FileSystem.AppDataDirectory;
-            var diagnosisKeysDir = Path.Combine(appDir, DIAGNOSIS_KEYS_DIR);
+            var exposureDetectionDir = Path.Combine(appDir, EXPOSURE_DETECTION_DIR);
 
-            if (!Directory.Exists(diagnosisKeysDir))
+            if (!Directory.Exists(exposureDetectionDir))
             {
-                Directory.CreateDirectory(diagnosisKeysDir);
+                Directory.CreateDirectory(exposureDetectionDir);
             }
 
-            var pathList = Directory.GetFiles(diagnosisKeysDir);
+            var pathList = Directory.GetFiles(exposureDetectionDir);
             if (pathList.Count() == 0)
             {
-                Debug.Print($"Directoery {diagnosisKeysDir} is empty");
+                Debug.Print($"Directoery {exposureDetectionDir} is empty");
                 return;
             }
 
