@@ -26,13 +26,13 @@ namespace Chino.Prism.ViewModel
         public DelegateCommand PreauthorizedKeysCommand { get; }
         public DelegateCommand ReqeustReleaseKeysCommand { get; }
 
-        public bool IsEnabled = false;
+        private bool _isEnabled = false;
 
         public string EnableExposureNotificationLabel
         {
             get
             {
-                return IsEnabled ? "EN is Enabled" : "Click to turn EN on";
+                return _isEnabled ? $"EN is Enabled" : $"Click to turn EN on";
             }
         }
 
@@ -57,11 +57,10 @@ namespace Chino.Prism.ViewModel
             PreauthorizedKeysCommand = new DelegateCommand(PreauthorizedKeys);
             ReqeustReleaseKeysCommand = new DelegateCommand(ReqeustReleaseKeys);
 
-            Task.Run(async () =>
+            _ = Task.Run(async () =>
             {
-                await Task.Delay(1000);
-
-                IsEnabled = await ExposureNotificationClient.IsEnabledAsync();
+                await ExposureNotificationClient.StartAsync();
+                _isEnabled = await ExposureNotificationClient.IsEnabledAsync();
                 PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
             });
         }
@@ -71,6 +70,9 @@ namespace Chino.Prism.ViewModel
             Debug.Print("EnableExposureNotification is clicked. " + await ExposureNotificationClient.GetVersionAsync());
 
             await ExposureNotificationClient.StartAsync();
+
+            _isEnabled = await ExposureNotificationClient.IsEnabledAsync();
+            PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
         }
 
         private async void GetTemporaryExposureKeys()
@@ -124,7 +126,7 @@ namespace Chino.Prism.ViewModel
 
         public void OnEnabled()
         {
-            IsEnabled = true;
+            _isEnabled = true;
             PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
         }
 
