@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chino.iOS;
 using DryIoc;
 using Foundation;
 using Prism.Ioc;

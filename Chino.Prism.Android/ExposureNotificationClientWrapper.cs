@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Gms.Common.Apis;
+using Chino.Android.Google;
 using Xamarin.Essentials;
 
 namespace Chino.Prism.Droid
