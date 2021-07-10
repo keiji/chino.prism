@@ -56,7 +56,7 @@
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
     <PackageReference Include="Chino.Android">
-      <Version>1.0.0-beta05</Version>
+      <Version>1.0.0-beta06</Version>
     </PackageReference>
     <PackageReference Include="Prism.DryIoc.Extensions">
       <Version>8.0.62</Version>

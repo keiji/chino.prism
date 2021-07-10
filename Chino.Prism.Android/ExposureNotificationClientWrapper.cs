@@ -33,14 +33,18 @@ namespace Chino.Prism.Droid
                 {
                     apiException.Status.StartResolutionForResult(Platform.CurrentActivity, REQUEST_EN_START);
                 }
+                else
+                {
+                    throw apiException;
+                }
             }
         }
 
         public override async Task StopAsync() => await Client.StopAsync();
 
-        public override async Task<IExposureNotificationStatus> GetStatusAsync()
+        public override async Task<IList<ExposureNotificationStatus>> GetStatusesAsync()
         {
-            return await Client.GetStatusAsync();
+            return await Client.GetStatusesAsync();
         }
 
         public override async Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistoryAsync()
@@ -54,6 +58,10 @@ namespace Chino.Prism.Droid
                 if (apiException.StatusCode == CommonStatusCodes.ResolutionRequired)
                 {
                     apiException.Status.StartResolutionForResult(Platform.CurrentActivity, REQUEST_GET_TEK_HISTORY);
+                }
+                else
+                {
+                    throw apiException;
                 }
             }
 
@@ -72,38 +80,17 @@ namespace Chino.Prism.Droid
 
         public override async Task ProvideDiagnosisKeysAsync(List<string> keyFiles)
         {
-            try
-            {
-                await Client.ProvideDiagnosisKeysAsync(keyFiles);
-            }
-            catch (ApiException apiException)
-            {
-                Debug.Print($"ApiException StatusCode {apiException.StatusCode}");
-            }
+            await Client.ProvideDiagnosisKeysAsync(keyFiles);
         }
 
         public override async Task ProvideDiagnosisKeysAsync(List<string> keyFiles, ExposureConfiguration configuration)
         {
-            try
-            {
-                await Client.ProvideDiagnosisKeysAsync(keyFiles, configuration);
-            }
-            catch (ApiException apiException)
-            {
-                Debug.Print($"ApiException StatusCode {apiException.StatusCode}");
-            }
+            await Client.ProvideDiagnosisKeysAsync(keyFiles, configuration);
         }
 
         public override async Task ProvideDiagnosisKeysAsync(List<string> keyFiles, ExposureConfiguration configuration, string token)
         {
-            try
-            {
-                await Client.ProvideDiagnosisKeysAsync(keyFiles, configuration, token);
-            }
-            catch (ApiException apiException)
-            {
-                Debug.Print($"ApiException StatusCode {apiException.StatusCode}");
-            }
+            await Client.ProvideDiagnosisKeysAsync(keyFiles, configuration, token);
         }
 
         public override async Task RequestPreAuthorizedTemporaryExposureKeyHistoryAsync()
@@ -117,6 +104,10 @@ namespace Chino.Prism.Droid
                 if (apiException.StatusCode == CommonStatusCodes.ResolutionRequired)
                 {
                     apiException.Status.StartResolutionForResult(Platform.CurrentActivity, REQUEST_PREAUTHORIZE_KEYS);
+                }
+                else
+                {
+                    throw apiException;
                 }
             }
         }
@@ -132,6 +123,10 @@ namespace Chino.Prism.Droid
                 if (apiException.StatusCode == CommonStatusCodes.ResolutionRequired)
                 {
                     apiException.Status.StartResolutionForResult(Platform.CurrentActivity, REQUEST_PREAUTHORIZE_KEYS);
+                }
+                else
+                {
+                    throw apiException;
                 }
             }
         }

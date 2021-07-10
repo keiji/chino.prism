@@ -7,7 +7,7 @@
         Padding="16,32">
         <Button
             Command="{Binding EnableExposureNotificationCommand}"
-            Text="{Binding EnableExposureNotificationLabel}" />
+            Text="Enable ExposureNotification" />
         <Button
             Command="{Binding GetTemporaryExposureKeysCommand}"
             Text="Get TemporaryExposureKeys" />
@@ -21,7 +21,7 @@
             Command="{Binding ReqeustReleaseKeysCommand}"
             Text="Request Release Keys" />
 
-        <Label Text="{Binding TEKsLabel}" />
+        <Label Text="{Binding Statuses}" />
     </StackLayout>
 
 </ContentPage>

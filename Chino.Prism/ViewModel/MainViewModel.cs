@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Chino.Common;
 using Prism.Commands;
 using Prism.Ioc;
 using Xamarin.Essentials;
@@ -26,26 +27,17 @@ namespace Chino.Prism.ViewModel
         public DelegateCommand PreauthorizedKeysCommand { get; }
         public DelegateCommand ReqeustReleaseKeysCommand { get; }
 
-        private bool _isEnabled = false;
+        private string _status = "";
 
-        public string EnableExposureNotificationLabel
+        public string Statuses
         {
             get
             {
-                return _isEnabled ? $"EN is Enabled" : $"Click to turn EN on";
+                return _status;
             }
         }
 
         private IList<ITemporaryExposureKey> TemporaryExposureKeys = new List<ITemporaryExposureKey>();
-
-        public string TEKsLabel
-        {
-            get
-            {
-                var tekKeyData = TemporaryExposureKeys.Select(tek => Convert.ToBase64String(tek.KeyData)).ToList();
-                return string.Join("\n", tekKeyData);
-            }
-        }
 
         public MainViewModel()
         {
@@ -59,9 +51,20 @@ namespace Chino.Prism.ViewModel
 
             _ = Task.Run(async () =>
             {
-                await ExposureNotificationClient.StartAsync();
-                _isEnabled = await ExposureNotificationClient.IsEnabledAsync();
-                PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
+                try
+                {
+                    await ExposureNotificationClient.StartAsync();
+
+                    ProcessStatuses(await ExposureNotificationClient.GetStatusesAsync());
+                }
+                catch (ENException enException)
+                {
+                    ProcessEnException(enException);
+                }
+                catch (Exception exception)
+                {
+                    Debug.Print(exception.ToString());
+                }
             });
         }
 
@@ -69,18 +72,42 @@ namespace Chino.Prism.ViewModel
         {
             Debug.Print("EnableExposureNotification is clicked. " + await ExposureNotificationClient.GetVersionAsync());
 
-            await ExposureNotificationClient.StartAsync();
+            try
+            {
+                await ExposureNotificationClient.StartAsync();
 
-            _isEnabled = await ExposureNotificationClient.IsEnabledAsync();
-            PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
+                ProcessStatuses(await ExposureNotificationClient.GetStatusesAsync());
+            }
+            catch (ENException enException)
+            {
+                ProcessEnException(enException);
+            }
+            catch (Exception exception)
+            {
+                Debug.Print(exception.ToString());
+            }
         }
 
         private async void GetTemporaryExposureKeys()
         {
             Debug.Print("GetTemporaryExposureKeys is clicked.");
 
-            TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
-            PropertyChanged(this, new PropertyChangedEventArgs("TEKsLabel"));
+            try
+            {
+                TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
+                var tekKeyData = TemporaryExposureKeys.Select(tek => Convert.ToBase64String(tek.KeyData)).ToList();
+                _status = string.Join("\n", tekKeyData);
+
+                PropertyChanged(this, new PropertyChangedEventArgs("Statuses"));
+            }
+            catch (ENException enException)
+            {
+                ProcessEnException(enException);
+            }
+            catch (Exception exception)
+            {
+                Debug.Print(exception.ToString());
+            }
         }
 
         private async void ProvideDiagnosisKeys()
@@ -102,32 +129,79 @@ namespace Chino.Prism.ViewModel
                 return;
             }
 
-            foreach(var path in pathList)
+            foreach (var path in pathList)
             {
                 Debug.Print($"{path}");
             }
 
-            await ExposureNotificationClient.ProvideDiagnosisKeysAsync(pathList.ToList<string>());
+            try
+            {
+                await ExposureNotificationClient.ProvideDiagnosisKeysAsync(pathList.ToList<string>());
+            }
+            catch (ENException enException)
+            {
+                ProcessEnException(enException);
+            }
+            catch (Exception exception)
+            {
+                Debug.Print(exception.ToString());
+            }
         }
 
         private async void PreauthorizedKeys()
         {
             Debug.Print("PreauthorizedKeys is clicked.");
 
-            await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyHistoryAsync();
+            try
+            {
+                await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyHistoryAsync();
+            }
+            catch (ENException enException)
+            {
+                ProcessEnException(enException);
+            }
+            catch (Exception exception)
+            {
+                Debug.Print(exception.ToString());
+            }
         }
 
         private async void ReqeustReleaseKeys()
         {
             Debug.Print("ReqeustReleaseKeys is clicked.");
 
-            await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
+            try
+            {
+                await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
+            }
+            catch (ENException enException)
+            {
+                ProcessEnException(enException);
+            }
+            catch (Exception exception)
+            {
+                Debug.Print(exception.ToString());
+            }
         }
 
         public void OnEnabled()
         {
-            _isEnabled = true;
-            PropertyChanged(this, new PropertyChangedEventArgs("EnableExposureNotificationLabel"));
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await ExposureNotificationClient.StartAsync();
+                    ProcessStatuses(await ExposureNotificationClient.GetStatusesAsync());
+                }
+                catch (ENException enException)
+                {
+                    ProcessEnException(enException);
+                }
+                catch (Exception exception)
+                {
+                    Debug.Print(exception.ToString());
+                }
+            });
         }
 
         public async void OnGetTekHistoryAllowed()
@@ -138,6 +212,60 @@ namespace Chino.Prism.ViewModel
 
         public void OnPreauthorizeAllowed()
         {
+        }
+
+        private void ProcessStatuses(IList<ExposureNotificationStatus> exposureNotificationStatuses)
+        {
+            foreach (var status in exposureNotificationStatuses)
+            {
+                ProcessStatus(status);
+            }
+
+            PropertyChanged(this, new PropertyChangedEventArgs("Statuses"));
+        }
+
+        private void ProcessStatus(ExposureNotificationStatus exposureNotificationStatus)
+        {
+            _status = "";
+
+            switch (exposureNotificationStatus.Code)
+            {
+                case ExposureNotificationStatus.Code_Android.ACTIVATED:
+                case ExposureNotificationStatus.Code_iOS.Active:
+                    _status += "EN is Active.\n";
+                    break;
+                case ExposureNotificationStatus.Code_Android.BLUETOOTH_DISABLED:
+                case ExposureNotificationStatus.Code_iOS.BluetoothOff:
+                    _status += "Bluetooth is disabled.\n";
+                    break;
+                case ExposureNotificationStatus.Code_Android.FOCUS_LOST:
+                    _status += "Another app using ExposureNotification API.\n";
+                    break;
+                case ExposureNotificationStatus.Code_Android.INACTIVATED:
+                case ExposureNotificationStatus.Code_iOS.Disabled:
+                    _status += "EN is not Activated.\n";
+                    break;
+                case ExposureNotificationStatus.Code_Android.USER_PROFILE_NOT_SUPPORT:
+                    _status += "User-profile not support to ExposureNotifications.\n";
+                    break;
+                case ExposureNotificationStatus.Code_iOS.Restricted:
+                    _status += "EN is restricted.\n";
+                    break;
+                case ExposureNotificationStatus.Code_Android.NO_CONSENT:
+                case ExposureNotificationStatus.Code_iOS.Unauthorized:
+                    _status += "EN is unauthorized.\n";
+                    break;
+                case ExposureNotificationStatus.Code_Android.UNKNOWN:
+                case ExposureNotificationStatus.Code_iOS.Unknown:
+                    _status += "Unknown status.\n";
+                    break;
+            };
+        }
+
+        private void ProcessEnException(ENException enException)
+        {
+            _status = $"ENException Code:{enException.Code} is occurred - {enException.Message}";
+            PropertyChanged(this, new PropertyChangedEventArgs("Statuses"));
         }
     }
 }
