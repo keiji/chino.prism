@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Chino.iOS;
+using Chino.Prism.Model;
 using DryIoc;
 using Foundation;
 using Prism.Ioc;
 using UIKit;
-
+using Xamarin.Essentials;
 using D = System.Diagnostics.Debug;
 
 namespace Chino.Prism.iOS
@@ -17,9 +20,12 @@ namespace Chino.Prism.iOS
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IExposureNotificationHandler
     {
         private static string USER_EXPLANATION = "Chino.Prism.iOS";
+        private const string EXPOSURE_DETECTION_RESULT_DIR = "exposure_detection_result";
 
         private Lazy<ExposureNotificationClient> ExposureNotificationClient
             = new Lazy<ExposureNotificationClient>(() => ContainerLocator.Container.Resolve<AbsExposureNotificationClient>() as ExposureNotificationClient);
+
+        private string _exposureDetectionResultDir;
 
         //
         // This method is invoked when the application has loaded and is ready to run. In this 
@@ -32,6 +38,8 @@ namespace Chino.Prism.iOS
         {
             App.InitializeContainer(RegisterPlatformService);
 
+            InitializeDirs();
+
             AbsExposureNotificationClient.Handler = this;
             ExposureNotificationClient.Value.UserExplanation = USER_EXPLANATION;
             ExposureNotificationClient.Value.IsTest = true;
@@ -40,6 +48,17 @@ namespace Chino.Prism.iOS
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);
+        }
+
+        private void InitializeDirs()
+        {
+            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            _exposureDetectionResultDir = Path.Combine(documents, EXPOSURE_DETECTION_RESULT_DIR);
+            if (!Directory.Exists(_exposureDetectionResultDir))
+            {
+                Directory.CreateDirectory(_exposureDetectionResultDir);
+            }
         }
 
         private void RegisterPlatformService(IContainer container)
@@ -54,11 +73,23 @@ namespace Chino.Prism.iOS
         public void ExposureDetected(IExposureSummary exposureSummary, IList<IExposureInformation> exposureInformations)
         {
             D.Print("# ExposureDetected ExposureInformation");
+
+            var exposureResult = new ExposureResult(GetEnClient().ExposureConfiguration,
+                 DateTime.Now,
+                 exposureSummary, exposureInformations);
+
+            Task.Run(async () => await SaveExposureResult(exposureResult));
         }
 
         public void ExposureDetected(IList<IDailySummary> dailySummaries, IList<IExposureWindow> exposureWindows)
         {
             D.Print("# ExposureDetected ExposureWindow");
+
+            var exposureResult = new ExposureResult(GetEnClient().ExposureConfiguration,
+                DateTime.Now,
+                dailySummaries, exposureWindows);
+
+            Task.Run(async () => await SaveExposureResult(exposureResult));
         }
 
         public void ExposureNotDetected()
@@ -74,6 +105,20 @@ namespace Chino.Prism.iOS
             {
                 D.Print(Convert.ToBase64String(tek.KeyData));
             }
+        }
+
+        private async Task SaveExposureResult(ExposureResult exposureResult)
+        {
+            exposureResult.Device = DeviceInfo.Model;
+            exposureResult.EnVersion = (await GetEnClient().GetVersionAsync()).ToString();
+
+            string fileName = $"{exposureResult.Id}.json";
+            var filePath = Path.Combine(_exposureDetectionResultDir, fileName);
+
+            string json = exposureResult.ToJsonString();
+            D.Print(json);
+
+            await File.WriteAllTextAsync(filePath, json);
         }
     }
 }

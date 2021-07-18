@@ -3,25 +3,55 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Chino.Prism.MainPage">
 
-    <StackLayout
-        Padding="16,32">
-        <Button
-            Command="{Binding EnableExposureNotificationCommand}"
-            Text="Enable ExposureNotification" />
-        <Button
-            Command="{Binding GetTemporaryExposureKeysCommand}"
-            Text="Get TemporaryExposureKeys" />
-        <Button
-            Command="{Binding ProvideDiagnosisKeysCommand}"
-            Text="Provide Diagnoiss Keys" />
-        <Button
-            Command="{Binding PreauthorizedKeysCommand}"
-            Text="Request Preauthorized Keys" />
-        <Button
-            Command="{Binding ReqeustReleaseKeysCommand}"
-            Text="Request Release Keys" />
+    <ScrollView>
 
-        <Label Text="{Binding Statuses}" />
-    </StackLayout>
+        <StackLayout
+            Padding="16,32">
+
+            <Button
+                Command="{Binding EnableExposureNotificationCommand}"
+                Text="Enable ExposureNotification" />
+            <Button
+                Command="{Binding GetTemporaryExposureKeysCommand}"
+                Text="Get TemporaryExposureKeys" />
+            <Button
+                Command="{Binding ProvideDiagnosisKeysV1Command}"
+                Text="Provide Diagnoiss Keys (Legacy v1)"
+                IsEnabled="{Binding ExposureConfigurationReady}"
+                />
+            <Button
+                Command="{Binding ProvideDiagnosisKeysCommand}"
+                IsEnabled="{Binding ExposureConfigurationReady}"
+                Text="Provide Diagnoiss Keys"
+                />
+            <Button
+                Command="{Binding PreauthorizedKeysCommand}"
+                Text="Request Preauthorized Keys" />
+            <Button
+                Command="{Binding ReqeustReleaseKeysCommand}"
+                Text="Request Release Keys" />
+
+            <Label Text="Sync with server"
+                   Margin="0,16,0,0"
+                   FontSize="Title"
+                   />
+            <Label Text="{Binding ServerInfo}" />
+
+            <Button
+                Command="{Binding UploadDiagnosisKeysToServerCommand}"
+                Text="Upload DiagnosisKeys to server" />
+            <Button
+                Command="{Binding DownloadDiagnosisKeysFromServerCommand}"
+                Text="Download DiagnosisKeys from server" />
+
+            <Label Text="Status"
+                   Margin="0,16,0,0"
+                   FontSize="Title"
+                   />
+            <Label Text="{Binding Statuses}" />
+
+        </StackLayout>
+
+    </ScrollView>
 
 </ContentPage>

@@ -32,6 +32,8 @@ namespace Chino.Prism
             var container = new Container();
             registerPlatformService(container);
 
+            container.Register<IEnServer, EnServer>(Reuse.Singleton);
+
             PrismContainerExtension.Init(container);
             ContainerLocator.SetContainerExtension(() => PrismContainerExtension.Current);
         }
