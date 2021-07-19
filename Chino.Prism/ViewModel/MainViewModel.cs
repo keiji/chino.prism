@@ -19,7 +19,7 @@ namespace Chino.Prism.ViewModel
         private const string EXPOSURE_CONFIGURATION_FILENAME = "exposure_configuration.json";
 
         private readonly IExposureNotificationEventSubject ExposureNotificationEventSubject = ContainerLocator.Container.Resolve<IExposureNotificationEventSubject>();
-        private readonly AbsExposureNotificationService _exposureNotificationClient = ContainerLocator.Container.Resolve<AbsExposureNotificationService>();
+        private readonly AbsExposureNotificationService _exposureNotificationService = ContainerLocator.Container.Resolve<AbsExposureNotificationService>();
 
         private readonly IEnServer EnServer = ContainerLocator.Container.Resolve<IEnServer>();
 
@@ -75,12 +75,12 @@ namespace Chino.Prism.ViewModel
             {
                 try
                 {
-                    await _exposureNotificationClient.StartAsync();
+                    await _exposureNotificationService.StartAsync();
                     await InitializeExposureConfiguration();
 
                     PropertyChanged(this, new PropertyChangedEventArgs("ExposureConfigurationReady"));
 
-                    ProcessStatuses(await _exposureNotificationClient.GetStatusesAsync());
+                    ProcessStatuses(await _exposureNotificationService.GetStatusesAsync());
                 }
                 catch (ENException enException)
                 {
@@ -135,7 +135,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                TemporaryExposureKeys = await _exposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
+                TemporaryExposureKeys = await _exposureNotificationService.GetTemporaryExposureKeyHistoryAsync();
 
                 await EnServer.UploadDiagnosisKeysAsync(Constants.CLUSTER_ID, TemporaryExposureKeys);
 
@@ -175,13 +175,13 @@ namespace Chino.Prism.ViewModel
 
         private async void EnableExposureNotification()
         {
-            Debug.Print("EnableExposureNotification is clicked. " + await _exposureNotificationClient.GetVersionAsync());
+            Debug.Print("EnableExposureNotification is clicked. " + await _exposureNotificationService.GetVersionAsync());
 
             try
             {
-                await _exposureNotificationClient.StartAsync();
+                await _exposureNotificationService.StartAsync();
 
-                ProcessStatuses(await _exposureNotificationClient.GetStatusesAsync());
+                ProcessStatuses(await _exposureNotificationService.GetStatusesAsync());
             }
             catch (ENException enException)
             {
@@ -199,7 +199,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                TemporaryExposureKeys = await _exposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
+                TemporaryExposureKeys = await _exposureNotificationService.GetTemporaryExposureKeyHistoryAsync();
                 var tekKeyData = TemporaryExposureKeys.Select(tek => Convert.ToBase64String(tek.KeyData)).ToList();
                 _status = string.Join("\n", tekKeyData);
 
@@ -232,11 +232,11 @@ namespace Chino.Prism.ViewModel
                 Debug.Print($"{path}");
             }
 
-            _exposureNotificationClient.ExposureConfiguration = _exposureConfiguration;
+            _exposureNotificationService.ExposureConfiguration = _exposureConfiguration;
 
             try
             {
-                await _exposureNotificationClient.ProvideDiagnosisKeysAsync(
+                await _exposureNotificationService.ProvideDiagnosisKeysAsync(
                     pathList.ToList<string>(),
                     _exposureConfiguration,
                     Guid.NewGuid().ToString()
@@ -276,11 +276,11 @@ namespace Chino.Prism.ViewModel
                 Debug.Print($"{path}");
             }
 
-            _exposureNotificationClient.ExposureConfiguration = _exposureConfiguration;
+            _exposureNotificationService.ExposureConfiguration = _exposureConfiguration;
 
             try
             {
-                await _exposureNotificationClient.ProvideDiagnosisKeysAsync(pathList.ToList<string>());
+                await _exposureNotificationService.ProvideDiagnosisKeysAsync(pathList.ToList<string>());
             }
             catch (ENException enException)
             {
@@ -298,7 +298,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                await _exposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyHistoryAsync();
+                await _exposureNotificationService.RequestPreAuthorizedTemporaryExposureKeyHistoryAsync();
             }
             catch (ENException enException)
             {
@@ -316,7 +316,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                await _exposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
+                await _exposureNotificationService.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
             }
             catch (ENException enException)
             {
@@ -347,8 +347,8 @@ namespace Chino.Prism.ViewModel
             {
                 try
                 {
-                    await _exposureNotificationClient.StartAsync();
-                    ProcessStatuses(await _exposureNotificationClient.GetStatusesAsync());
+                    await _exposureNotificationService.StartAsync();
+                    ProcessStatuses(await _exposureNotificationService.GetStatusesAsync());
                 }
                 catch (ENException enException)
                 {
