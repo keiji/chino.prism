@@ -70,7 +70,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MainApplication.cs" />
-    <Compile Include="ExposureNotificationClientWrapper.cs" />
+    <Compile Include="ExposureNotificationService.cs" />
     <Compile Include="ExposureNotificationEventSubject.cs" />
   </ItemGroup>
   <ItemGroup>

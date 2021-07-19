@@ -15,7 +15,7 @@ namespace Chino.Prism
 
         public void FireOnEnableEvent()
         {
-            foreach(var callback in CallbackList)
+            foreach (var callback in CallbackList)
             {
                 callback.OnEnabled();
             }
@@ -26,6 +26,14 @@ namespace Chino.Prism
             foreach (var callback in CallbackList)
             {
                 callback.OnGetTekHistoryAllowed();
+            }
+        }
+
+        public void FireOnGetTekHistoryAllowedForUpload()
+        {
+            foreach (var callback in CallbackList)
+            {
+                callback.OnGetTekHistoryAllowedForUpload();
             }
         }
 
@@ -43,6 +51,7 @@ namespace Chino.Prism
         {
             public void OnEnabled();
             public void OnGetTekHistoryAllowed();
+            public void OnGetTekHistoryAllowedForUpload();
             public void OnPreauthorizeAllowed();
         }
     }
