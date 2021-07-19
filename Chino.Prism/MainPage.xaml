@@ -18,6 +18,7 @@
                 Command="{Binding ProvideDiagnosisKeysV1Command}"
                 Text="Provide Diagnoiss Keys (Legacy v1)"
                 IsEnabled="{Binding ExposureConfigurationReady}"
+                IsVisible="{Binding IsVisibleProvideDiagnosisKeysV1Button}"
                 />
             <Button
                 Command="{Binding ProvideDiagnosisKeysCommand}"

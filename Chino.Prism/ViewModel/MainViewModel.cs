@@ -121,6 +121,14 @@ namespace Chino.Prism.ViewModel
             await File.WriteAllTextAsync(exposureConfigurationPath, configJson);
         }
 
+        public bool IsVisibleProvideDiagnosisKeysV1Button
+        {
+            get
+            {
+                return DeviceInfo.Platform == DevicePlatform.Android;
+            }
+        }
+
         private async void UploadDiagnosisKeysToServer()
         {
             _status = "UploadDiagnosisKeysToServer is clicked.\n";
