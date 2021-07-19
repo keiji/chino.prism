@@ -44,7 +44,7 @@ namespace Chino.Prism.Droid
 
         private void PrepareDirs()
         {
-            _exposureDetectionResultDir = Path.Combine(FilesDir.Path, EXPOSURE_DETECTION_RESULT_DIR);
+            _exposureDetectionResultDir = Path.Combine(FilesDir.AbsolutePath, EXPOSURE_DETECTION_RESULT_DIR);
             if (!File.Exists(_exposureDetectionResultDir))
             {
                 Directory.CreateDirectory(_exposureDetectionResultDir);

@@ -50,9 +50,12 @@ namespace Chino.Prism.iOS
 
         private void PrepareDirs()
         {
-            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            // https://stackoverflow.com/a/20518884
+            var docsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var libDir = Path.Combine(docsPath, "..", "Library");
+            D.Print(libDir);
 
-            _exposureDetectionResultDir = Path.Combine(documents, EXPOSURE_DETECTION_RESULT_DIR);
+            _exposureDetectionResultDir = Path.Combine(libDir, EXPOSURE_DETECTION_RESULT_DIR);
             if (!Directory.Exists(_exposureDetectionResultDir))
             {
                 Directory.CreateDirectory(_exposureDetectionResultDir);
@@ -91,13 +94,10 @@ namespace Chino.Prism.iOS
                 DateTime.Now,
                 dailySummaries, exposureWindows);
 
-            string fileName = $"{exposureResult.Id}.json";
-            var filePath = Path.Combine(_exposureDetectionResultDir, fileName);
-
             _ = Task.Run(async () => await Utils.SaveExposureResult(
                 exposureResult,
                 (await GetEnClient().GetVersionAsync()).ToString(),
-                filePath)
+                _exposureDetectionResultDir)
             );
         }
 
