@@ -18,8 +18,8 @@ namespace Chino.Prism.Droid
 #endif
     public class MainApplication : Application, IExposureNotificationHandler
     {
-        private Lazy<ExposureNotificationClientWrapper> ExposureNotificationClientWrapper
-            = new Lazy<ExposureNotificationClientWrapper>(() => ContainerLocator.Container.Resolve<AbsExposureNotificationClient>() as ExposureNotificationClientWrapper);
+        private Lazy<ExposureNotificationService> ExposureNotificationClientWrapper
+            = new Lazy<ExposureNotificationService>(() => ContainerLocator.Container.Resolve<IExposureNotificationService>() as ExposureNotificationService);
 
         private const string EXPOSURE_DETECTION_RESULT_DIR = "exposure_detection_result";
 
@@ -53,7 +53,7 @@ namespace Chino.Prism.Droid
 
         private void RegisterPlatformService(IContainer container)
         {
-            container.Register<IExposureNotificationService, ExposureNotificationClientWrapper>(Reuse.Singleton);
+            container.Register<IExposureNotificationService, ExposureNotificationService>(Reuse.Singleton);
             container.Register<IExposureNotificationEventSubject, ExposureNotificationEventSubject>(Reuse.Singleton);
         }
 

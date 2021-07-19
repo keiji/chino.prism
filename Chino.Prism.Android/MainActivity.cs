@@ -48,19 +48,19 @@ namespace Chino.Prism.Droid
 
             switch (requestCode)
             {
-                case ExposureNotificationClientWrapper.REQUEST_EN_START:
+                case ExposureNotificationService.REQUEST_EN_START:
                     D.Print("EN_START");
                     ExposureNotificationEventSubject.FireOnEnableEvent();
                     break;
-                case ExposureNotificationClientWrapper.REQUEST_GET_TEK_HISTORY:
+                case ExposureNotificationService.REQUEST_GET_TEK_HISTORY:
                     D.Print("GET_TEK_HISTORY");
                     ExposureNotificationEventSubject.FireOnGetTekHistoryAllowed();
                     break;
-                case ExposureNotificationClientWrapper.REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER:
+                case ExposureNotificationService.REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER:
                     D.Print("REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER");
                     ExposureNotificationEventSubject.FireOnGetTekHistoryAllowedForUpload();
                     break;
-                case ExposureNotificationClientWrapper.REQUEST_PREAUTHORIZE_KEYS:
+                case ExposureNotificationService.REQUEST_PREAUTHORIZE_KEYS:
                     D.Print("PREAUTHORIZE_KEYS");
                     ExposureNotificationEventSubject.FireOnPreauthorizeAllowed();
                     break;
