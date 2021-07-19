@@ -56,6 +56,10 @@ namespace Chino.Prism.Droid
                     D.Print("GET_TEK_HISTORY");
                     ExposureNotificationEventSubject.FireOnGetTekHistoryAllowed();
                     break;
+                case ExposureNotificationClientWrapper.REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER:
+                    D.Print("REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER");
+                    ExposureNotificationEventSubject.FireOnGetTekHistoryAllowedForUpload();
+                    break;
                 case ExposureNotificationClientWrapper.REQUEST_PREAUTHORIZE_KEYS:
                     D.Print("PREAUTHORIZE_KEYS");
                     ExposureNotificationEventSubject.FireOnPreauthorizeAllowed();

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Chino.iOS;
 using Chino.Prism.Model;
 using DryIoc;
 using Foundation;
@@ -21,8 +20,8 @@ namespace Chino.Prism.iOS
         private static string USER_EXPLANATION = "Chino.Prism.iOS";
         private const string EXPOSURE_DETECTION_RESULT_DIR = "exposure_detection_result";
 
-        private Lazy<ExposureNotificationClient> ExposureNotificationClient
-            = new Lazy<ExposureNotificationClient>(() => ContainerLocator.Container.Resolve<AbsExposureNotificationClient>() as ExposureNotificationClient);
+        private Lazy<ExposureNotificationService> ExposureNotificationClient
+            = new Lazy<ExposureNotificationService>(() => ContainerLocator.Container.Resolve<IExposureNotificationService>() as ExposureNotificationService);
 
         private string _exposureDetectionResultDir;
 
@@ -62,7 +61,7 @@ namespace Chino.Prism.iOS
 
         private void RegisterPlatformService(IContainer container)
         {
-            container.Register<AbsExposureNotificationClient, ExposureNotificationClient>(Reuse.Singleton);
+            container.Register<IExposureNotificationService, ExposureNotificationService>(Reuse.Singleton);
             container.Register<IExposureNotificationEventSubject, ExposureNotificationEventSubject>(Reuse.Singleton);
         }
 

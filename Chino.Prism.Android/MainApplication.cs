@@ -53,7 +53,7 @@ namespace Chino.Prism.Droid
 
         private void RegisterPlatformService(IContainer container)
         {
-            container.Register<AbsExposureNotificationClient, ExposureNotificationClientWrapper>(Reuse.Singleton);
+            container.Register<IExposureNotificationService, ExposureNotificationClientWrapper>(Reuse.Singleton);
             container.Register<IExposureNotificationEventSubject, ExposureNotificationEventSubject>(Reuse.Singleton);
         }
 

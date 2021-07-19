@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Gms.Common.Apis;
@@ -8,11 +7,12 @@ using Xamarin.Essentials;
 
 namespace Chino.Prism.Droid
 {
-    public class ExposureNotificationClientWrapper : AbsExposureNotificationClient
+    public class ExposureNotificationClientWrapper : IExposureNotificationService
     {
         public const int REQUEST_EN_START = 0x10;
         public const int REQUEST_GET_TEK_HISTORY = 0x11;
-        public const int REQUEST_PREAUTHORIZE_KEYS = 0x12;
+        public const int REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER = 0x12;
+        public const int REQUEST_PREAUTHORIZE_KEYS = 0x13;
 
         public readonly ExposureNotificationClient Client = new ExposureNotificationClient();
 
@@ -58,6 +58,30 @@ namespace Chino.Prism.Droid
                 if (apiException.StatusCode == CommonStatusCodes.ResolutionRequired)
                 {
                     apiException.Status.StartResolutionForResult(Platform.CurrentActivity, REQUEST_GET_TEK_HISTORY);
+                }
+                else
+                {
+                    throw apiException;
+                }
+            }
+
+            return new List<ITemporaryExposureKey>();
+        }
+
+        public override async Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistoryForUploadServerAsync()
+        {
+            try
+            {
+                return await Client.GetTemporaryExposureKeyHistoryAsync();
+            }
+            catch (ApiException apiException)
+            {
+                if (apiException.StatusCode == CommonStatusCodes.ResolutionRequired)
+                {
+                    apiException.Status.StartResolutionForResult(
+                        Platform.CurrentActivity,
+                        REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER
+                        );
                 }
                 else
                 {

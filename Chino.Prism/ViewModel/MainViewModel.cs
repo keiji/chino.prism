@@ -351,9 +351,18 @@ namespace Chino.Prism.ViewModel
 
         public void OnGetTekHistoryAllowed()
         {
-            _status += "";
-            PropertyChanged(this, new PropertyChangedEventArgs("GetTemporaryExposureKeysHistory is allowed,\n" +
-                "Please retry."));
+            _status += "GetTemporaryExposureKeysHistory is allowed.";
+            PropertyChanged(this, new PropertyChangedEventArgs("Statuses"));
+
+            GetTemporaryExposureKeys();
+        }
+
+        public void OnGetTekHistoryAllowedForUpload()
+        {
+            _status += "GetTemporaryExposureKeysHistoryForUploadServer is allowed.";
+            PropertyChanged(this, new PropertyChangedEventArgs("Statuses"));
+
+            UploadDiagnosisKeysToServer();
         }
 
         public void OnPreauthorizeAllowed()
