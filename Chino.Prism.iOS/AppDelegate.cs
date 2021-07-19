@@ -8,7 +8,6 @@ using DryIoc;
 using Foundation;
 using Prism.Ioc;
 using UIKit;
-using Xamarin.Essentials;
 using D = System.Diagnostics.Debug;
 
 namespace Chino.Prism.iOS
@@ -78,7 +77,11 @@ namespace Chino.Prism.iOS
                  DateTime.Now,
                  exposureSummary, exposureInformations);
 
-            Task.Run(async () => await SaveExposureResult(exposureResult));
+            _ = Task.Run(async () => await Utils.SaveExposureResult(
+                exposureResult,
+                (await GetEnClient().GetVersionAsync()).ToString(),
+                _exposureDetectionResultDir)
+            );
         }
 
         public void ExposureDetected(IList<IDailySummary> dailySummaries, IList<IExposureWindow> exposureWindows)
@@ -89,12 +92,28 @@ namespace Chino.Prism.iOS
                 DateTime.Now,
                 dailySummaries, exposureWindows);
 
-            Task.Run(async () => await SaveExposureResult(exposureResult));
+            string fileName = $"{exposureResult.Id}.json";
+            var filePath = Path.Combine(_exposureDetectionResultDir, fileName);
+
+            _ = Task.Run(async () => await Utils.SaveExposureResult(
+                exposureResult,
+                (await GetEnClient().GetVersionAsync()).ToString(),
+                filePath)
+            );
         }
 
         public void ExposureNotDetected()
         {
             D.Print("# ExposureNotDetected");
+
+            var exposureResult = new ExposureResult(GetEnClient().ExposureConfiguration,
+                DateTime.Now);
+
+            _ = Task.Run(async () => await Utils.SaveExposureResult(
+                exposureResult,
+                (await GetEnClient().GetVersionAsync()).ToString(),
+                _exposureDetectionResultDir)
+            );
         }
 
         public void TemporaryExposureKeyReleased(IList<ITemporaryExposureKey> temporaryExposureKeys)
@@ -105,20 +124,6 @@ namespace Chino.Prism.iOS
             {
                 D.Print(Convert.ToBase64String(tek.KeyData));
             }
-        }
-
-        private async Task SaveExposureResult(ExposureResult exposureResult)
-        {
-            exposureResult.Device = DeviceInfo.Model;
-            exposureResult.EnVersion = (await GetEnClient().GetVersionAsync()).ToString();
-
-            string fileName = $"{exposureResult.Id}.json";
-            var filePath = Path.Combine(_exposureDetectionResultDir, fileName);
-
-            string json = exposureResult.ToJsonString();
-            D.Print(json);
-
-            await File.WriteAllTextAsync(filePath, json);
         }
     }
 }
