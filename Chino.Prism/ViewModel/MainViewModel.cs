@@ -232,6 +232,8 @@ namespace Chino.Prism.ViewModel
                 Debug.Print($"{path}");
             }
 
+            _exposureNotificationClient.ExposureConfiguration = _exposureConfiguration;
+
             try
             {
                 await _exposureNotificationClient.ProvideDiagnosisKeysAsync(
@@ -273,6 +275,8 @@ namespace Chino.Prism.ViewModel
             {
                 Debug.Print($"{path}");
             }
+
+            _exposureNotificationClient.ExposureConfiguration = _exposureConfiguration;
 
             try
             {
