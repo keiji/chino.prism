@@ -68,13 +68,10 @@ namespace Chino.Prism.Droid
                 DateTime.Now,
                 exposureSummary, exposureInformations);
 
-            string fileName = $"{exposureResult.Id}.json";
-            var filePath = Path.Combine(_exposureDetectionResultDir, fileName);
-
             _ = Task.Run(async () => await Utils.SaveExposureResult(
                 exposureResult,
                 (await GetEnClient().GetVersionAsync()).ToString(),
-                filePath)
+                _exposureDetectionResultDir)
             );
         }
 
@@ -86,13 +83,10 @@ namespace Chino.Prism.Droid
                 DateTime.Now,
                 dailySummaries, exposureWindows);
 
-            string fileName = $"{exposureResult.Id}.json";
-            var filePath = Path.Combine(_exposureDetectionResultDir, fileName);
-
             _ = Task.Run(async () => await Utils.SaveExposureResult(
                 exposureResult,
                 (await GetEnClient().GetVersionAsync()).ToString(),
-                filePath)
+                _exposureDetectionResultDir)
             );
         }
 
