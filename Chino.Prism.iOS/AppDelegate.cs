@@ -17,11 +17,11 @@ namespace Chino.Prism.iOS
     [Register("AppDelegate")]
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IExposureNotificationHandler
     {
-        private static string USER_EXPLANATION = "Chino.Prism.iOS";
+        private const string USER_EXPLANATION = "Chino.Prism.iOS";
         private const string EXPOSURE_DETECTION_RESULT_DIR = "exposure_detection_result";
 
-        private Lazy<ExposureNotificationService> ExposureNotificationClient
-            = new Lazy<ExposureNotificationService>(() => ContainerLocator.Container.Resolve<IExposureNotificationService>() as ExposureNotificationService);
+        private Lazy<ExposureNotificationService> _exposureNotificationClient
+            = new Lazy<ExposureNotificationService>(() => ContainerLocator.Container.Resolve<AbsExposureNotificationService>() as ExposureNotificationService);
 
         private string _exposureDetectionResultDir;
 
@@ -36,11 +36,11 @@ namespace Chino.Prism.iOS
         {
             App.InitializeContainer(RegisterPlatformService);
 
-            InitializeDirs();
+            PrepareDirs();
 
             AbsExposureNotificationClient.Handler = this;
-            ExposureNotificationClient.Value.UserExplanation = USER_EXPLANATION;
-            ExposureNotificationClient.Value.IsTest = true;
+            _exposureNotificationClient.Value.UserExplanation = USER_EXPLANATION;
+            _exposureNotificationClient.Value.IsTest = true;
 
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
@@ -48,7 +48,7 @@ namespace Chino.Prism.iOS
             return base.FinishedLaunching(app, options);
         }
 
-        private void InitializeDirs()
+        private void PrepareDirs()
         {
             var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
@@ -61,12 +61,12 @@ namespace Chino.Prism.iOS
 
         private void RegisterPlatformService(IContainer container)
         {
-            container.Register<IExposureNotificationService, ExposureNotificationService>(Reuse.Singleton);
+            container.Register<AbsExposureNotificationService, ExposureNotificationService>(Reuse.Singleton);
             container.Register<IExposureNotificationEventSubject, ExposureNotificationEventSubject>(Reuse.Singleton);
         }
 
         public AbsExposureNotificationClient GetEnClient()
-            => ExposureNotificationClient.Value;
+            => _exposureNotificationClient.Value;
 
         public void ExposureDetected(IExposureSummary exposureSummary, IList<IExposureInformation> exposureInformations)
         {

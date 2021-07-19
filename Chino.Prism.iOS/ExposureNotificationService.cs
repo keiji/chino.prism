@@ -4,7 +4,7 @@ using Chino.iOS;
 
 namespace Chino.Prism.iOS
 {
-    public class ExposureNotificationService : IExposureNotificationService
+    public class ExposureNotificationService : AbsExposureNotificationService
     {
         private ExposureNotificationClient _exposureNotificationClient = new ExposureNotificationClient();
 

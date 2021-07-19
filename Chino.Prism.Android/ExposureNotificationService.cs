@@ -7,7 +7,7 @@ using Xamarin.Essentials;
 
 namespace Chino.Prism.Droid
 {
-    public class ExposureNotificationService : IExposureNotificationService
+    public class ExposureNotificationService : AbsExposureNotificationService
     {
         public const int REQUEST_EN_START = 0x10;
         public const int REQUEST_GET_TEK_HISTORY = 0x11;

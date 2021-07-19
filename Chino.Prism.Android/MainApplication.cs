@@ -18,10 +18,10 @@ namespace Chino.Prism.Droid
 #endif
     public class MainApplication : Application, IExposureNotificationHandler
     {
-        private Lazy<ExposureNotificationService> ExposureNotificationClientWrapper
-            = new Lazy<ExposureNotificationService>(() => ContainerLocator.Container.Resolve<IExposureNotificationService>() as ExposureNotificationService);
-
         private const string EXPOSURE_DETECTION_RESULT_DIR = "exposure_detection_result";
+
+        private Lazy<ExposureNotificationService> _exposureNotificationService
+            = new Lazy<ExposureNotificationService>(() => ContainerLocator.Container.Resolve<AbsExposureNotificationService>() as ExposureNotificationService);
 
         private string _exposureDetectionResultDir;
 
@@ -37,12 +37,12 @@ namespace Chino.Prism.Droid
 
             AbsExposureNotificationClient.Handler = this;
 
-            ExposureNotificationClientWrapper.Value.Init(this);
+            _exposureNotificationService.Value.Init(this);
 
-            InitializeDirs();
+            PrepareDirs();
         }
 
-        private void InitializeDirs()
+        private void PrepareDirs()
         {
             _exposureDetectionResultDir = Path.Combine(FilesDir.Path, EXPOSURE_DETECTION_RESULT_DIR);
             if (!File.Exists(_exposureDetectionResultDir))
@@ -53,12 +53,12 @@ namespace Chino.Prism.Droid
 
         private void RegisterPlatformService(IContainer container)
         {
-            container.Register<IExposureNotificationService, ExposureNotificationService>(Reuse.Singleton);
+            container.Register<AbsExposureNotificationService, ExposureNotificationService>(Reuse.Singleton);
             container.Register<IExposureNotificationEventSubject, ExposureNotificationEventSubject>(Reuse.Singleton);
         }
 
         public AbsExposureNotificationClient GetEnClient()
-            => ExposureNotificationClientWrapper.Value.Client;
+            => _exposureNotificationService.Value.Client;
 
         public void ExposureDetected(IExposureSummary exposureSummary, IList<IExposureInformation> exposureInformations)
         {

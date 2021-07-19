@@ -18,8 +18,8 @@ namespace Chino.Prism.ViewModel
         private const string EXPOSURE_DETECTION_DIR = "exposure_detection";
         private const string EXPOSURE_CONFIGURATION_FILENAME = "exposure_configuration.json";
 
-        private readonly AbsExposureNotificationClient ExposureNotificationClient = ContainerLocator.Container.Resolve<AbsExposureNotificationClient>();
         private readonly IExposureNotificationEventSubject ExposureNotificationEventSubject = ContainerLocator.Container.Resolve<IExposureNotificationEventSubject>();
+        private readonly AbsExposureNotificationService _exposureNotificationClient = ContainerLocator.Container.Resolve<AbsExposureNotificationService>();
 
         private readonly IEnServer EnServer = ContainerLocator.Container.Resolve<IEnServer>();
 
@@ -75,12 +75,12 @@ namespace Chino.Prism.ViewModel
             {
                 try
                 {
-                    await ExposureNotificationClient.StartAsync();
+                    await _exposureNotificationClient.StartAsync();
                     await InitializeExposureConfiguration();
 
                     PropertyChanged(this, new PropertyChangedEventArgs("ExposureConfigurationReady"));
 
-                    ProcessStatuses(await ExposureNotificationClient.GetStatusesAsync());
+                    ProcessStatuses(await _exposureNotificationClient.GetStatusesAsync());
                 }
                 catch (ENException enException)
                 {
@@ -127,7 +127,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
+                TemporaryExposureKeys = await _exposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
 
                 await EnServer.UploadDiagnosisKeysAsync(Constants.CLUSTER_ID, TemporaryExposureKeys);
 
@@ -153,7 +153,7 @@ namespace Chino.Prism.ViewModel
 
             _status += $"diagnosisKeyEntryList have been downloaded.\n";
 
-            string exposureDetectionDir = SetupExposureDetectionDir();
+            string exposureDetectionDir = PrepareExposureDetectionDir();
 
             foreach (var diagnosisKeyEntry in diagnosisKeyEntryList)
             {
@@ -167,13 +167,13 @@ namespace Chino.Prism.ViewModel
 
         private async void EnableExposureNotification()
         {
-            Debug.Print("EnableExposureNotification is clicked. " + await ExposureNotificationClient.GetVersionAsync());
+            Debug.Print("EnableExposureNotification is clicked. " + await _exposureNotificationClient.GetVersionAsync());
 
             try
             {
-                await ExposureNotificationClient.StartAsync();
+                await _exposureNotificationClient.StartAsync();
 
-                ProcessStatuses(await ExposureNotificationClient.GetStatusesAsync());
+                ProcessStatuses(await _exposureNotificationClient.GetStatusesAsync());
             }
             catch (ENException enException)
             {
@@ -191,7 +191,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                TemporaryExposureKeys = await ExposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
+                TemporaryExposureKeys = await _exposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
                 var tekKeyData = TemporaryExposureKeys.Select(tek => Convert.ToBase64String(tek.KeyData)).ToList();
                 _status = string.Join("\n", tekKeyData);
 
@@ -211,7 +211,7 @@ namespace Chino.Prism.ViewModel
         {
             Debug.Print("ProvideDiagnosisKeysV1 is clicked.");
 
-            string exposureDetectionDir = SetupExposureDetectionDir();
+            string exposureDetectionDir = PrepareExposureDetectionDir();
             var pathList = Directory.GetFiles(exposureDetectionDir);
             if (pathList.Count() == 0)
             {
@@ -226,7 +226,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                await ExposureNotificationClient.ProvideDiagnosisKeysAsync(
+                await _exposureNotificationClient.ProvideDiagnosisKeysAsync(
                     pathList.ToList<string>(),
                     _exposureConfiguration,
                     Guid.NewGuid().ToString()
@@ -268,7 +268,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                await ExposureNotificationClient.ProvideDiagnosisKeysAsync(pathList.ToList<string>());
+                await _exposureNotificationClient.ProvideDiagnosisKeysAsync(pathList.ToList<string>());
             }
             catch (ENException enException)
             {
@@ -286,7 +286,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyHistoryAsync();
+                await _exposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyHistoryAsync();
             }
             catch (ENException enException)
             {
@@ -304,7 +304,7 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                await ExposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
+                await _exposureNotificationClient.RequestPreAuthorizedTemporaryExposureKeyReleaseAsync();
             }
             catch (ENException enException)
             {
@@ -316,7 +316,7 @@ namespace Chino.Prism.ViewModel
             }
         }
 
-        private string SetupExposureDetectionDir()
+        private string PrepareExposureDetectionDir()
         {
             var appDir = FileSystem.AppDataDirectory;
             var exposureDetectionDir = Path.Combine(appDir, EXPOSURE_DETECTION_DIR);
@@ -335,8 +335,8 @@ namespace Chino.Prism.ViewModel
             {
                 try
                 {
-                    await ExposureNotificationClient.StartAsync();
-                    ProcessStatuses(await ExposureNotificationClient.GetStatusesAsync());
+                    await _exposureNotificationClient.StartAsync();
+                    ProcessStatuses(await _exposureNotificationClient.GetStatusesAsync());
                 }
                 catch (ENException enException)
                 {
