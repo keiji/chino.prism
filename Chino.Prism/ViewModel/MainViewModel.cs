@@ -38,13 +38,21 @@ namespace Chino.Prism.ViewModel
         {
             get
             {
-                if (_serverConfiguration == null)
+                if (!ServerConfigurationReady)
                 {
                     return "ServerConfiguration: N/A";
                 }
 
                 return $"Endpoint: {_serverConfiguration.ApiEndpoint}\n" +
             $"Cluster ID: {_serverConfiguration.ClusterId}";
+            }
+        }
+
+        public bool ServerConfigurationReady
+        {
+            get
+            {
+                return _serverConfiguration != null;
             }
         }
 
@@ -80,6 +88,7 @@ namespace Chino.Prism.ViewModel
                     await PrepareDirs();
 
                     _serverConfiguration = await LoadServerConfiguration();
+                    PropertyChanged(this, new PropertyChangedEventArgs("ServerConfigurationReady"));
                     PropertyChanged(this, new PropertyChangedEventArgs("ServerInfo"));
 
                     await _exposureNotificationService.StartAsync();

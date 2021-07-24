@@ -40,10 +40,14 @@
 
             <Button
                 Command="{Binding UploadDiagnosisKeysToServerCommand}"
-                Text="Upload DiagnosisKeys to server" />
+                Text="Upload DiagnosisKeys to server"
+                IsEnabled="{Binding ServerConfigurationReady}"
+                />
             <Button
                 Command="{Binding DownloadDiagnosisKeysFromServerCommand}"
-                Text="Download DiagnosisKeys from server" />
+                Text="Download DiagnosisKeys from server"
+                IsEnabled="{Binding ServerConfigurationReady}"
+                />
 
             <Label Text="Status"
                    Margin="0,16,0,0"
