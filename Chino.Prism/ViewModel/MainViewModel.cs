@@ -15,13 +15,12 @@ namespace Chino.Prism.ViewModel
 {
     public class MainViewModel : INotifyPropertyChanged, IExposureNotificationEventSubject.IExposureNotificationEventCallback
     {
-        private const string EXPOSURE_DETECTION_DIR = "exposure_detection";
-        private const string EXPOSURE_CONFIGURATION_FILENAME = "exposure_configuration.json";
-
         private readonly IExposureNotificationEventSubject ExposureNotificationEventSubject = ContainerLocator.Container.Resolve<IExposureNotificationEventSubject>();
         private readonly AbsExposureNotificationService _exposureNotificationService = ContainerLocator.Container.Resolve<AbsExposureNotificationService>();
 
         private readonly IEnServer EnServer = ContainerLocator.Container.Resolve<IEnServer>();
+
+        private ServerConfiguration _serverConfiguration;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -35,14 +34,25 @@ namespace Chino.Prism.ViewModel
         public DelegateCommand UploadDiagnosisKeysToServerCommand { get; }
         public DelegateCommand DownloadDiagnosisKeysFromServerCommand { get; }
 
-        private string _serverInfo = $"Endpoint: {Constants.API_ENDPOINT}\n" +
-            $"Cluster ID: {Constants.CLUSTER_ID}";
-
         public string ServerInfo
         {
             get
             {
-                return _serverInfo;
+                if (!ServerConfigurationReady)
+                {
+                    return "ServerConfiguration: N/A";
+                }
+
+                return $"Endpoint: {_serverConfiguration.ApiEndpoint}\n" +
+            $"Cluster ID: {_serverConfiguration.ClusterId}";
+            }
+        }
+
+        public bool ServerConfigurationReady
+        {
+            get
+            {
+                return _serverConfiguration != null;
             }
         }
 
@@ -75,9 +85,15 @@ namespace Chino.Prism.ViewModel
             {
                 try
                 {
-                    await _exposureNotificationService.StartAsync();
-                    await InitializeExposureConfiguration();
+                    await PrepareDirs();
 
+                    _serverConfiguration = await LoadServerConfiguration();
+                    PropertyChanged(this, new PropertyChangedEventArgs("ServerConfigurationReady"));
+                    PropertyChanged(this, new PropertyChangedEventArgs("ServerInfo"));
+
+                    await _exposureNotificationService.StartAsync();
+
+                    _exposureConfiguration = await LoadExposureConfiguration();
                     PropertyChanged(this, new PropertyChangedEventArgs("ExposureConfigurationReady"));
 
                     ProcessStatuses(await _exposureNotificationService.GetStatusesAsync());
@@ -103,22 +119,65 @@ namespace Chino.Prism.ViewModel
             }
         }
 
-        private async Task InitializeExposureConfiguration()
+        private string _teksDir;
+        private string _configurationDir;
+        private string _exposureDetectionDir;
+
+        private async Task PrepareDirs()
         {
             var appDir = FileSystem.AppDataDirectory;
-            var exposureConfigurationPath = Path.Combine(appDir, EXPOSURE_CONFIGURATION_FILENAME);
-            if (File.Exists(exposureConfigurationPath))
-            {
-                using StreamReader sr = File.OpenText(exposureConfigurationPath);
-                string config = await sr.ReadToEndAsync();
 
-                _exposureConfiguration = JsonConvert.DeserializeObject<ExposureConfiguration>(config);
-                return;
+            _teksDir = Path.Combine(appDir, Constants.TEKS_DIR);
+            if (!Directory.Exists(_teksDir))
+            {
+                Directory.CreateDirectory(_teksDir);
             }
 
-            _exposureConfiguration = new ExposureConfiguration();
-            var configJson = JsonConvert.SerializeObject(_exposureConfiguration, Formatting.Indented);
+            _configurationDir = Path.Combine(appDir, Constants.CONFIGURATION_DIR);
+            if (!Directory.Exists(_configurationDir))
+            {
+                Directory.CreateDirectory(_configurationDir);
+            }
+
+            _exposureDetectionDir = Path.Combine(appDir, Constants.EXPOSURE_DETECTION_DIR);
+            if (!Directory.Exists(_exposureDetectionDir))
+            {
+                Directory.CreateDirectory(_exposureDetectionDir);
+            }
+        }
+
+        private async Task<ServerConfiguration> LoadServerConfiguration()
+        {
+            var serverConfigurationPath = Path.Combine(_configurationDir, Constants.SERVER_CONFIGURATION_FILENAME);
+
+            if (File.Exists(serverConfigurationPath))
+            {
+                string config = await File.ReadAllTextAsync(serverConfigurationPath);
+                return JsonConvert.DeserializeObject<ServerConfiguration>(config);
+            }
+
+            var serverConfiguration = new ServerConfiguration();
+            var configJson = JsonConvert.SerializeObject(serverConfiguration, Formatting.Indented);
+            await File.WriteAllTextAsync(serverConfigurationPath, configJson);
+
+            return serverConfiguration;
+        }
+
+        private async Task<ExposureConfiguration> LoadExposureConfiguration()
+        {
+            var exposureConfigurationPath = Path.Combine(_configurationDir, Constants.EXPOSURE_CONFIGURATION_FILENAME);
+
+            if (File.Exists(exposureConfigurationPath))
+            {
+                string config = await File.ReadAllTextAsync(exposureConfigurationPath);
+                return JsonConvert.DeserializeObject<ExposureConfiguration>(config);
+            }
+
+            var exposureConfiguration = new ExposureConfiguration();
+            var configJson = JsonConvert.SerializeObject(exposureConfiguration, Formatting.Indented);
             await File.WriteAllTextAsync(exposureConfigurationPath, configJson);
+
+            return exposureConfiguration;
         }
 
         public bool IsVisibleProvideDiagnosisKeysV1Button
@@ -137,7 +196,7 @@ namespace Chino.Prism.ViewModel
             {
                 TemporaryExposureKeys = await _exposureNotificationService.GetTemporaryExposureKeyHistoryAsync();
 
-                await EnServer.UploadDiagnosisKeysAsync(Constants.CLUSTER_ID, TemporaryExposureKeys);
+                await EnServer.UploadDiagnosisKeysAsync(_serverConfiguration, TemporaryExposureKeys);
 
                 _status += $"diagnosisKeyEntryList have been uploaded.\n";
 
@@ -157,15 +216,13 @@ namespace Chino.Prism.ViewModel
         {
             _status = "DownloadDiagnosisKeysFromServer is clicked.\n";
 
-            var diagnosisKeyEntryList = await EnServer.GetDiagnosisKeysListAsync(Constants.CLUSTER_ID);
+            var diagnosisKeyEntryList = await EnServer.GetDiagnosisKeysListAsync(_serverConfiguration);
 
             _status += $"diagnosisKeyEntryList have been downloaded.\n";
 
-            string exposureDetectionDir = PrepareExposureDetectionDir();
-
             foreach (var diagnosisKeyEntry in diagnosisKeyEntryList)
             {
-                await EnServer.DownloadDiagnosisKeysAsync(diagnosisKeyEntry, exposureDetectionDir);
+                await EnServer.DownloadDiagnosisKeysAsync(diagnosisKeyEntry, _exposureDetectionDir);
 
                 _status += $"{diagnosisKeyEntry.Url} has been downloaded.\n";
             }
@@ -219,11 +276,10 @@ namespace Chino.Prism.ViewModel
         {
             Debug.Print("ProvideDiagnosisKeysV1 is clicked.");
 
-            string exposureDetectionDir = PrepareExposureDetectionDir();
-            var pathList = Directory.GetFiles(exposureDetectionDir);
+            var pathList = Directory.GetFiles(_exposureDetectionDir);
             if (pathList.Count() == 0)
             {
-                Debug.Print($"Directoery {exposureDetectionDir} is empty");
+                Debug.Print($"Directoery {_exposureDetectionDir} is empty");
                 return;
             }
 
@@ -256,18 +312,15 @@ namespace Chino.Prism.ViewModel
         {
             Debug.Print("ProvideDiagnosisKeys is clicked.");
 
-            var appDir = FileSystem.AppDataDirectory;
-            var exposureDetectionDir = Path.Combine(appDir, EXPOSURE_DETECTION_DIR);
-
-            if (!Directory.Exists(exposureDetectionDir))
+            if (!Directory.Exists(_exposureDetectionDir))
             {
-                Directory.CreateDirectory(exposureDetectionDir);
+                Directory.CreateDirectory(_exposureDetectionDir);
             }
 
-            var pathList = Directory.GetFiles(exposureDetectionDir);
+            var pathList = Directory.GetFiles(_exposureDetectionDir);
             if (pathList.Count() == 0)
             {
-                Debug.Print($"Directoery {exposureDetectionDir} is empty");
+                Debug.Print($"Directoery {_exposureDetectionDir} is empty");
                 return;
             }
 
@@ -326,19 +379,6 @@ namespace Chino.Prism.ViewModel
             {
                 Debug.Print(exception.ToString());
             }
-        }
-
-        private string PrepareExposureDetectionDir()
-        {
-            var appDir = FileSystem.AppDataDirectory;
-            var exposureDetectionDir = Path.Combine(appDir, EXPOSURE_DETECTION_DIR);
-
-            if (!Directory.Exists(exposureDetectionDir))
-            {
-                Directory.CreateDirectory(exposureDetectionDir);
-            }
-
-            return exposureDetectionDir;
         }
 
         public void OnEnabled()

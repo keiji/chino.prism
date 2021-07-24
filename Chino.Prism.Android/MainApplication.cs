@@ -18,8 +18,6 @@ namespace Chino.Prism.Droid
 #endif
     public class MainApplication : Application, IExposureNotificationHandler
     {
-        private const string EXPOSURE_DETECTION_RESULT_DIR = "exposure_detection_result";
-
         private Lazy<ExposureNotificationService> _exposureNotificationService
             = new Lazy<ExposureNotificationService>(() => ContainerLocator.Container.Resolve<AbsExposureNotificationService>() as ExposureNotificationService);
 
@@ -44,8 +42,8 @@ namespace Chino.Prism.Droid
 
         private void PrepareDirs()
         {
-            _exposureDetectionResultDir = Path.Combine(FilesDir.AbsolutePath, EXPOSURE_DETECTION_RESULT_DIR);
-            if (!File.Exists(_exposureDetectionResultDir))
+            _exposureDetectionResultDir = Path.Combine(FilesDir.AbsolutePath, Constants.EXPOSURE_DETECTION_RESULT_DIR);
+            if (!Directory.Exists(_exposureDetectionResultDir))
             {
                 Directory.CreateDirectory(_exposureDetectionResultDir);
             }

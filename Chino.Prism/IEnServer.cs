@@ -8,13 +8,13 @@ namespace Chino.Prism
     public interface IEnServer
     {
         public Task UploadDiagnosisKeysAsync(
-            string clusterId,
+            ServerConfiguration serverConfiguration,
             IList<ITemporaryExposureKey> temporaryExposureKeyList,
             ReportType defaultRportType = ReportType.ConfirmedClinicalDiagnosis,
             RiskLevel defaultTrasmissionRisk = RiskLevel.Medium
             );
 
-        public Task<IList<DiagnosisKeyEntry>> GetDiagnosisKeysListAsync(string clusterId);
+        public Task<IList<DiagnosisKeyEntry>> GetDiagnosisKeysListAsync(ServerConfiguration serverConfiguration);
 
         public Task DownloadDiagnosisKeysAsync(DiagnosisKeyEntry diagnosisKeyEntry, string path);
 

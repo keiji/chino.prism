@@ -21,7 +21,7 @@ namespace Chino.Prism
         }
 
         public async Task UploadDiagnosisKeysAsync(
-            string clusterId,
+            ServerConfiguration serverConfiguration,
             IList<ITemporaryExposureKey> temporaryExposureKeyList,
             ReportType defaultRportType = ReportType.ConfirmedClinicalDiagnosis,
             RiskLevel defaultTrasmissionRisk = RiskLevel.Medium
@@ -33,7 +33,7 @@ namespace Chino.Prism
 
             var httpContent = new StringContent(requestJson);
 
-            Uri uri = new Uri($"{Constants.API_ENDPOINT}/{clusterId}/chino-diagnosis-keys.json");
+            Uri uri = new Uri($"{serverConfiguration.ApiEndpoint}/{serverConfiguration.ClusterId}/chino-diagnosis-keys.json");
             HttpResponseMessage response = await client.PutAsync(uri, httpContent);
             if (response.IsSuccessStatusCode)
             {
@@ -46,9 +46,9 @@ namespace Chino.Prism
             }
         }
 
-        public async Task<IList<DiagnosisKeyEntry>> GetDiagnosisKeysListAsync(string clusterId)
+        public async Task<IList<DiagnosisKeyEntry>> GetDiagnosisKeysListAsync(ServerConfiguration serverConfiguration)
         {
-            Uri uri = new Uri($"{Constants.API_ENDPOINT}/{clusterId}/list.json");
+            Uri uri = new Uri($"{serverConfiguration.ApiEndpoint}/{serverConfiguration.ClusterId}/list.json");
             HttpResponseMessage response = await client.GetAsync(uri);
             if (response.IsSuccessStatusCode)
             {
