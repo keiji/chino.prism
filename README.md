@@ -28,7 +28,7 @@ namespace Sample.Common
 }
 ```
 
-また、一度サンプルアプリを起動すると端末内に作成される`config/server_configuration.json`を書き換えると、設定値をオーバーライドできます。
+また、一度アプリを起動すると端末内に作成される`config/server_configuration.json`を書き換えると、設定値をオーバーライドできます。
 
 サーバーの実装の詳細は次のURLを参照してください。
 
