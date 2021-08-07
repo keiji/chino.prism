@@ -25,10 +25,10 @@ namespace Chino.Prism.iOS
         public override Task<IList<ExposureNotificationStatus>> GetStatusesAsync()
             => _exposureNotificationClient.GetStatusesAsync();
 
-        public override Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistoryAsync()
+        public override Task<List<TemporaryExposureKey>> GetTemporaryExposureKeyHistoryAsync()
             => _exposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
 
-        public override Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistoryForUploadServerAsync()
+        public override Task<List<TemporaryExposureKey>> GetTemporaryExposureKeyHistoryForUploadServerAsync()
             => _exposureNotificationClient.GetTemporaryExposureKeyHistoryAsync();
 
         public override Task<long> GetVersionAsync()

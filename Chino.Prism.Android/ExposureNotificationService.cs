@@ -47,7 +47,7 @@ namespace Chino.Prism.Droid
             return await Client.GetStatusesAsync();
         }
 
-        public override async Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistoryAsync()
+        public override async Task<List<TemporaryExposureKey>> GetTemporaryExposureKeyHistoryAsync()
         {
             try
             {
@@ -65,10 +65,10 @@ namespace Chino.Prism.Droid
                 }
             }
 
-            return new List<ITemporaryExposureKey>();
+            return new List<TemporaryExposureKey>();
         }
 
-        public override async Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistoryForUploadServerAsync()
+        public override async Task<List<TemporaryExposureKey>> GetTemporaryExposureKeyHistoryForUploadServerAsync()
         {
             try
             {
@@ -89,7 +89,7 @@ namespace Chino.Prism.Droid
                 }
             }
 
-            return new List<ITemporaryExposureKey>();
+            return new List<TemporaryExposureKey>();
         }
 
         public override async Task<long> GetVersionAsync()
