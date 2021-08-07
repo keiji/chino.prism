@@ -58,7 +58,7 @@ namespace Chino.Prism.Droid
         public AbsExposureNotificationClient GetEnClient()
             => _exposureNotificationService.Value.Client;
 
-        public void ExposureDetected(IExposureSummary exposureSummary, IList<IExposureInformation> exposureInformations)
+        public void ExposureDetected(ExposureSummary exposureSummary, IList<ExposureInformation> exposureInformations)
         {
             D.Print("# ExposureDetected ExposureInformation");
 
@@ -73,7 +73,7 @@ namespace Chino.Prism.Droid
             );
         }
 
-        public void ExposureDetected(IList<IDailySummary> dailySummaries, IList<IExposureWindow> exposureWindows)
+        public void ExposureDetected(IList<DailySummary> dailySummaries, IList<ExposureWindow> exposureWindows)
         {
             D.Print("# ExposureDetected ExposureWindow");
 
@@ -102,11 +102,11 @@ namespace Chino.Prism.Droid
             );
         }
 
-        public void TemporaryExposureKeyReleased(IList<ITemporaryExposureKey> temporaryExposureKeys)
+        public void TemporaryExposureKeyReleased(IList<TemporaryExposureKey> temporaryExposureKeys)
         {
             D.Print("# TemporaryExposureKeyReleased");
 
-            foreach (ITemporaryExposureKey tek in temporaryExposureKeys)
+            foreach (TemporaryExposureKey tek in temporaryExposureKeys)
             {
                 D.Print(Convert.ToBase64String(tek.KeyData));
             }

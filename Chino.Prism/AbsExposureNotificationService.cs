@@ -5,6 +5,6 @@ namespace Chino.Prism
 {
     public abstract class AbsExposureNotificationService : AbsExposureNotificationClient
     {
-        public abstract Task<List<ITemporaryExposureKey>> GetTemporaryExposureKeyHistoryForUploadServerAsync();
+        public abstract Task<List<TemporaryExposureKey>> GetTemporaryExposureKeyHistoryForUploadServerAsync();
     }
 }

@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Chino.Common;
 using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Ioc;
@@ -65,7 +64,7 @@ namespace Chino.Prism.ViewModel
             }
         }
 
-        private IList<ITemporaryExposureKey> TemporaryExposureKeys = new List<ITemporaryExposureKey>();
+        private IList<TemporaryExposureKey> TemporaryExposureKeys = new List<TemporaryExposureKey>();
 
         public MainViewModel()
         {

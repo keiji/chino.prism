@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -9,7 +8,7 @@ namespace Chino.Prism
     {
         public Task UploadDiagnosisKeysAsync(
             ServerConfiguration serverConfiguration,
-            IList<ITemporaryExposureKey> temporaryExposureKeyList,
+            IList<TemporaryExposureKey> temporaryExposureKeyList,
             ReportType defaultRportType = ReportType.ConfirmedClinicalDiagnosis,
             RiskLevel defaultTrasmissionRisk = RiskLevel.Medium
             );
