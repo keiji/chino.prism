@@ -4,15 +4,15 @@ using Android.Runtime;
 using Android.OS;
 using Android.Content;
 
-using D = System.Diagnostics.Debug;
-using Prism.Ioc;
+using Prism.Common;
+using System;
 
 namespace Chino.Prism.Droid
 {
     [Activity(Label = "Chino.Prism", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
-        private readonly IExposureNotificationEventSubject ExposureNotificationEventSubject = ContainerLocator.Container.Resolve<IExposureNotificationEventSubject>();
+        private App _app;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -20,14 +20,9 @@ namespace Chino.Prism.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            LoadApplication(new App());
-        }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            ExposureNotificationEventSubject.Dispose();
+            _app = new App();
+            LoadApplication(_app);
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
@@ -46,25 +41,21 @@ namespace Chino.Prism.Droid
                 return;
             }
 
-            switch (requestCode)
+            Action<IExposureNotificationEventCallback> action = requestCode switch
             {
-                case ExposureNotificationService.REQUEST_EN_START:
-                    D.Print("EN_START");
-                    ExposureNotificationEventSubject.FireOnEnableEvent();
-                    break;
-                case ExposureNotificationService.REQUEST_GET_TEK_HISTORY:
-                    D.Print("GET_TEK_HISTORY");
-                    ExposureNotificationEventSubject.FireOnGetTekHistoryAllowed();
-                    break;
-                case ExposureNotificationService.REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER:
-                    D.Print("REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER");
-                    ExposureNotificationEventSubject.FireOnGetTekHistoryAllowedForUpload();
-                    break;
-                case ExposureNotificationService.REQUEST_PREAUTHORIZE_KEYS:
-                    D.Print("PREAUTHORIZE_KEYS");
-                    ExposureNotificationEventSubject.FireOnPreauthorizeAllowed();
-                    break;
-            }
+                ExposureNotificationService.REQUEST_EN_START
+                    => new Action<IExposureNotificationEventCallback>(callback => { callback.OnEnabled(); }),
+                ExposureNotificationService.REQUEST_GET_TEK_HISTORY
+                    => new Action<IExposureNotificationEventCallback>(callback => { callback.OnGetTekHistoryAllowed(); }),
+                ExposureNotificationService.REQUEST_GET_TEK_HISTORY_FOR_UPLOAD_SERVER
+                    => new Action<IExposureNotificationEventCallback>(callback => { callback.OnGetTekHistoryAllowedForUpload(); }),
+                ExposureNotificationService.REQUEST_PREAUTHORIZE_KEYS
+                    => new Action<IExposureNotificationEventCallback>(callback => { callback.OnPreauthorizeAllowed(); }),
+                _ => new Action<IExposureNotificationEventCallback>(callback => { /* do nothing */ }),
+            };
+
+            PageUtilities.InvokeViewAndViewModelAction(PageUtilities.GetCurrentPage(_app.MainPage), action);
+
         }
     }
 }
