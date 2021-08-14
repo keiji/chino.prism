@@ -12,9 +12,8 @@ using Xamarin.Essentials;
 
 namespace Chino.Prism.ViewModel
 {
-    public class MainViewModel : INotifyPropertyChanged, IExposureNotificationEventSubject.IExposureNotificationEventCallback
+    public class MainViewModel : INotifyPropertyChanged, IExposureNotificationEventCallback
     {
-        private readonly IExposureNotificationEventSubject ExposureNotificationEventSubject = ContainerLocator.Container.Resolve<IExposureNotificationEventSubject>();
         private readonly AbsExposureNotificationService _exposureNotificationService = ContainerLocator.Container.Resolve<AbsExposureNotificationService>();
 
         private readonly IEnServer EnServer = ContainerLocator.Container.Resolve<IEnServer>();
@@ -68,8 +67,6 @@ namespace Chino.Prism.ViewModel
 
         public MainViewModel()
         {
-            ExposureNotificationEventSubject.AddObserver(this);
-
             EnableExposureNotificationCommand = new DelegateCommand(EnableExposureNotification);
             GetTemporaryExposureKeysCommand = new DelegateCommand(GetTemporaryExposureKeys);
             ProvideDiagnosisKeysV1Command = new DelegateCommand(ProvideDiagnosisKeysV1);
