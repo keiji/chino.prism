@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Chino.Prism
 {
-    public abstract class IExposureNotificationEventSubject : IDisposable
+    public abstract class AbsExposureNotificationEventSubject : IDisposable
     {
         private readonly IList<IExposureNotificationEventCallback> CallbackList = new List<IExposureNotificationEventCallback>();
 
@@ -54,5 +54,9 @@ namespace Chino.Prism
             public void OnGetTekHistoryAllowedForUpload();
             public void OnPreauthorizeAllowed();
         }
+    }
+
+    public class ExposureNotificationEventSubject : AbsExposureNotificationEventSubject
+    {
     }
 }

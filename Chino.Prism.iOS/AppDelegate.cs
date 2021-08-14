@@ -65,7 +65,6 @@ namespace Chino.Prism.iOS
         private void RegisterPlatformService(IContainer container)
         {
             container.Register<AbsExposureNotificationService, ExposureNotificationService>(Reuse.Singleton);
-            container.Register<IExposureNotificationEventSubject, ExposureNotificationEventSubject>(Reuse.Singleton);
         }
 
         public AbsExposureNotificationClient GetEnClient()

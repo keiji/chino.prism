@@ -33,6 +33,7 @@ namespace Chino.Prism
             registerPlatformService(container);
 
             container.Register<IEnServer, EnServer>(Reuse.Singleton);
+            container.Register<AbsExposureNotificationEventSubject, ExposureNotificationEventSubject>(Reuse.Singleton);
 
             PrismContainerExtension.Init(container);
             ContainerLocator.SetContainerExtension(() => PrismContainerExtension.Current);
