@@ -212,18 +212,26 @@ namespace Chino.Prism.ViewModel
         {
             _status = "DownloadDiagnosisKeysFromServer is clicked.\n";
 
-            var diagnosisKeyEntryList = await EnServer.GetDiagnosisKeysListAsync(_serverConfiguration);
-
-            _status += $"diagnosisKeyEntryList have been downloaded.\n";
-
-            foreach (var diagnosisKeyEntry in diagnosisKeyEntryList)
+            try
             {
-                await EnServer.DownloadDiagnosisKeysAsync(diagnosisKeyEntry, _exposureDetectionDir);
+                var diagnosisKeyEntryList = await EnServer.GetDiagnosisKeysListAsync(_serverConfiguration);
 
-                _status += $"{diagnosisKeyEntry.Url} has been downloaded.\n";
+                _status += $"diagnosisKeyEntryList have been downloaded.\n";
+
+                foreach (var diagnosisKeyEntry in diagnosisKeyEntryList)
+                {
+                    await EnServer.DownloadDiagnosisKeysAsync(diagnosisKeyEntry, _exposureDetectionDir);
+
+                    _status += $"{diagnosisKeyEntry.Url} has been downloaded.\n";
+                }
+
+                PropertyChanged(this, new PropertyChangedEventArgs("Statuses"));
+
             }
-
-            PropertyChanged(this, new PropertyChangedEventArgs("Statuses"));
+            catch (Exception e)
+            {
+                Debug.Print(e.ToString());
+            }
         }
 
         private async void EnableExposureNotification()
