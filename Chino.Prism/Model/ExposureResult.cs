@@ -6,9 +6,6 @@ namespace Chino.Prism.Model
 {
     public class ExposureResult
     {
-        [JsonProperty("id")]
-        public string Id;
-
         private string _device = "unknown_device";
         public string Device
         {
@@ -16,8 +13,6 @@ namespace Chino.Prism.Model
             {
                 string device = value.Replace(" ", "_");
                 _device = device;
-
-                UpdateId();
             }
         }
 
@@ -70,14 +65,6 @@ namespace Chino.Prism.Model
             this.exposureInformations = exposureInformations;
             this.dailySummaries = dailySummaries;
             this.exposureWindows = exposureWindows;
-
-            UpdateId();
-        }
-
-        private void UpdateId()
-        {
-            var hashCode = GetHashCode();
-            Id = $"{_device}-{hashCode}";
         }
 
         public string ToJsonString() => JsonConvert.SerializeObject(this, Formatting.Indented);
