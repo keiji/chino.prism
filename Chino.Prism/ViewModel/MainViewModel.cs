@@ -144,7 +144,7 @@ namespace Chino.Prism.ViewModel
 
         private async Task<ServerConfiguration> LoadServerConfiguration()
         {
-            var serverConfigurationPath = Path.Combine(_configurationDir, Constants.SERVER_CONFIGURATION_FILENAME);
+            var serverConfigurationPath = Path.Combine(_configurationDir, Constants.DIAGNOSIS_KEY_SERVER_CONFIGURATION_FILENAME);
 
             if (File.Exists(serverConfigurationPath))
             {
@@ -228,9 +228,9 @@ namespace Chino.Prism.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs("Statuses"));
 
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Debug.Print(e.ToString());
+                Debug.Print(exception.GetType().ToString());
             }
         }
 
