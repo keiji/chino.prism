@@ -4,9 +4,10 @@ using System.IO;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Runtime;
+using Chino.Prism.Droid.Service;
 using Chino.Prism.Model;
+using Chino.Prism.Service;
 using DryIoc;
-using Newtonsoft.Json;
 using Prism.Ioc;
 using Sample.Common;
 using Xamarin.Essentials;
@@ -24,9 +25,10 @@ namespace Chino.Prism.Droid
         private Lazy<ExposureNotificationService> _exposureNotificationService
             = new Lazy<ExposureNotificationService>(() => ContainerLocator.Container.Resolve<AbsExposureNotificationService>() as ExposureNotificationService);
 
-        private string _exposureDetectionResultDir;
+        private Lazy<IExposureDataServerRepository> _exposureDataServerRepository
+            = new Lazy<IExposureDataServerRepository>(() => ContainerLocator.Container.Resolve<IExposureDataServerRepository>());
 
-        private string _configurationDir;
+        private string _exposureDetectionResultDir;
 
         public MainApplication(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
         {
@@ -52,33 +54,12 @@ namespace Chino.Prism.Droid
             {
                 Directory.CreateDirectory(_exposureDetectionResultDir);
             }
-
-            _configurationDir = Path.Combine(FilesDir.AbsolutePath, Constants.CONFIGURATION_DIR);
-            if (!Directory.Exists(_configurationDir))
-            {
-                Directory.CreateDirectory(_configurationDir);
-            }
-        }
-
-        private async Task<ExposureDataServerConfiguration> LoadExposureDataServerConfiguration()
-        {
-            var serverConfigurationPath = Path.Combine(_configurationDir, Constants.EXPOSURE_DATA_SERVER_CONFIGURATION_FILENAME);
-            if (File.Exists(serverConfigurationPath))
-            {
-                return JsonConvert.DeserializeObject<ExposureDataServerConfiguration>(
-                    await System.IO.File.ReadAllTextAsync(serverConfigurationPath)
-                    );
-            }
-
-            var serverConfiguration = new ExposureDataServerConfiguration();
-            var json = JsonConvert.SerializeObject(serverConfiguration, Formatting.Indented);
-            await File.WriteAllTextAsync(serverConfigurationPath, json);
-            return serverConfiguration;
         }
 
         private void RegisterPlatformService(IContainer container)
         {
             container.Register<AbsExposureNotificationService, ExposureNotificationService>(Reuse.Singleton);
+            container.Register<IPlatformPathService, PlatformPathService>(Reuse.Singleton);
         }
 
         public AbsExposureNotificationClient GetEnClient()
@@ -106,9 +87,7 @@ namespace Chino.Prism.Droid
                 };
                 var filePath = await Utils.SaveExposureResult(exposureResult, _exposureDetectionResultDir);
 
-                var exposureDataServerConfiguration = await LoadExposureDataServerConfiguration();
-
-                var exposureDataResponse = await new ExposureDataServer(exposureDataServerConfiguration).UploadExposureDataAsync(
+                var exposureDataResponse = await _exposureDataServerRepository.Value.UploadExposureDataAsync(
                     GetEnClient().ExposureConfiguration,
                     DeviceInfo.Model,
                     enVersion
@@ -139,9 +118,7 @@ namespace Chino.Prism.Droid
                 };
                 var filePath = await Utils.SaveExposureResult(exposureResult, _exposureDetectionResultDir);
 
-                var exposureDataServerConfiguration = await LoadExposureDataServerConfiguration();
-
-                var exposureDataResponse = await new ExposureDataServer(exposureDataServerConfiguration).UploadExposureDataAsync(
+                var exposureDataResponse = await _exposureDataServerRepository.Value.UploadExposureDataAsync(
                     GetEnClient().ExposureConfiguration,
                     DeviceInfo.Model,
                     enVersion
@@ -173,9 +150,7 @@ namespace Chino.Prism.Droid
                 };
                 var filePath = await Utils.SaveExposureResult(exposureResult, _exposureDetectionResultDir);
 
-                var exposureDataServerConfiguration = await LoadExposureDataServerConfiguration();
-
-                var exposureDataResponse = await new ExposureDataServer(exposureDataServerConfiguration).UploadExposureDataAsync(
+                var exposureDataResponse = await _exposureDataServerRepository.Value.UploadExposureDataAsync(
                     GetEnClient().ExposureConfiguration,
                     DeviceInfo.Model,
                     enVersion

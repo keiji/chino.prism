@@ -6,11 +6,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Chino;
+using Chino.Prism;
+using Chino.Prism.Service;
 using Newtonsoft.Json;
 
 namespace Sample.Common
 {
-    public interface IDiagnosisKeyServer
+    public interface IDiagnosisKeyServerRepository
     {
         public Task UploadDiagnosisKeysAsync(
             DateTime symptomOnsetDate,
@@ -25,18 +27,41 @@ namespace Sample.Common
 
     }
 
-    public class DiagnosisKeyServer : IDiagnosisKeyServer
+    public class DiagnosisKeyServerRepository : IDiagnosisKeyServerRepository
     {
         private const long BUFFER_LENGTH = 4 * 1024 * 1024;
         private const string FORMAT_SYMPTOM_ONSET_DATE = "yyyy-MM-dd'T'HH:mm:ss.fffzzz";
 
-        private readonly DiagnosisKeyServerConfiguration _serverConfiguration;
         private readonly HttpClient _client;
+        private readonly string _serverConfigurationPath;
 
-        public DiagnosisKeyServer(DiagnosisKeyServerConfiguration serverConfiguration)
+        public DiagnosisKeyServerRepository(
+            IPlatformPathService platformPathService
+            )
         {
-            _serverConfiguration = serverConfiguration;
             _client = new HttpClient();
+
+            var configurationDir = platformPathService.GetConfigurationPath();
+            if (!Directory.Exists(configurationDir))
+            {
+                Directory.CreateDirectory(configurationDir);
+            }
+            _serverConfigurationPath = Path.Combine(configurationDir, Constants.DIAGNOSIS_KEY_SERVER_CONFIGURATION_FILENAME);
+        }
+
+        private async Task<DiagnosisKeyServerConfiguration> LoadDiagnosisKeyServerConfiguration()
+        {
+            if (File.Exists(_serverConfigurationPath))
+            {
+                return JsonConvert.DeserializeObject<DiagnosisKeyServerConfiguration>(
+                    await File.ReadAllTextAsync(_serverConfigurationPath)
+                    );
+            }
+
+            var serverConfiguration = new DiagnosisKeyServerConfiguration();
+            var json = JsonConvert.SerializeObject(serverConfiguration, Formatting.Indented);
+            await File.WriteAllTextAsync(_serverConfigurationPath, json);
+            return serverConfiguration;
         }
 
         public async Task UploadDiagnosisKeysAsync(
@@ -46,6 +71,8 @@ namespace Sample.Common
             ReportType defaultRportType = ReportType.ConfirmedTest
             )
         {
+            var serverConfiguration = await LoadDiagnosisKeyServerConfiguration();
+
             var request = new RequestDiagnosisKey(
                 symptomOnsetDate.ToString(FORMAT_SYMPTOM_ONSET_DATE),
                 temporaryExposureKeyList,
@@ -57,7 +84,7 @@ namespace Sample.Common
 
             var httpContent = new StringContent(requestJson);
 
-            Uri uri = new Uri($"{_serverConfiguration.ApiEndpoint}/{_serverConfiguration.ClusterId}/chino-diagnosis-keys.json");
+            Uri uri = new Uri($"{serverConfiguration.ApiEndpoint}/{serverConfiguration.ClusterId}/chino-diagnosis-keys.json");
             HttpResponseMessage response = await _client.PutAsync(uri, httpContent);
             if (response.IsSuccessStatusCode)
             {
@@ -72,7 +99,9 @@ namespace Sample.Common
 
         public async Task<IList<DiagnosisKeyEntry>> GetDiagnosisKeysListAsync()
         {
-            Uri uri = new Uri($"{_serverConfiguration.ApiEndpoint}/{_serverConfiguration.ClusterId}/list.json");
+            var serverConfiguration = await LoadDiagnosisKeyServerConfiguration();
+
+            Uri uri = new Uri($"{serverConfiguration.ApiEndpoint}/{serverConfiguration.ClusterId}/list.json");
             HttpResponseMessage response = await _client.GetAsync(uri);
             if (response.IsSuccessStatusCode)
             {

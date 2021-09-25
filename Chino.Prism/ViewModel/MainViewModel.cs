@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Ioc;
+using Sample.Common;
 using Xamarin.Essentials;
 
 namespace Chino.Prism.ViewModel
@@ -16,7 +17,7 @@ namespace Chino.Prism.ViewModel
     {
         private readonly AbsExposureNotificationService _exposureNotificationService = ContainerLocator.Container.Resolve<AbsExposureNotificationService>();
 
-        private readonly IEnServer EnServer = ContainerLocator.Container.Resolve<IEnServer>();
+        private readonly IDiagnosisKeyServerRepository DiagnosisKeyServerRepository = ContainerLocator.Container.Resolve<IDiagnosisKeyServerRepository>();
 
         private ServerConfiguration _serverConfiguration;
 
@@ -192,7 +193,10 @@ namespace Chino.Prism.ViewModel
             {
                 TemporaryExposureKeys = await _exposureNotificationService.GetTemporaryExposureKeyHistoryAsync();
 
-                await EnServer.UploadDiagnosisKeysAsync(_serverConfiguration, TemporaryExposureKeys);
+                DateTime symptomOnsetDate = DateTime.UtcNow.Date - TimeSpan.FromDays(TemporaryExposureKeys.Count / 2);
+                string idempotencyKey = Guid.NewGuid().ToString();
+
+                await DiagnosisKeyServerRepository.UploadDiagnosisKeysAsync(symptomOnsetDate, TemporaryExposureKeys, idempotencyKey);
 
                 _status += $"diagnosisKeyEntryList have been uploaded.\n";
 
@@ -214,13 +218,13 @@ namespace Chino.Prism.ViewModel
 
             try
             {
-                var diagnosisKeyEntryList = await EnServer.GetDiagnosisKeysListAsync(_serverConfiguration);
+                var diagnosisKeyEntryList = await DiagnosisKeyServerRepository.GetDiagnosisKeysListAsync();
 
                 _status += $"diagnosisKeyEntryList have been downloaded.\n";
 
                 foreach (var diagnosisKeyEntry in diagnosisKeyEntryList)
                 {
-                    await EnServer.DownloadDiagnosisKeysAsync(diagnosisKeyEntry, _exposureDetectionDir);
+                    await DiagnosisKeyServerRepository.DownloadDiagnosisKeysAsync(diagnosisKeyEntry, _exposureDetectionDir);
 
                     _status += $"{diagnosisKeyEntry.Url} has been downloaded.\n";
                 }
@@ -280,7 +284,8 @@ namespace Chino.Prism.ViewModel
         {
             Debug.Print("ProvideDiagnosisKeysV1 is clicked.");
 
-            var pathList = Directory.GetFiles(_exposureDetectionDir);
+            var pathList = Directory.GetFiles(_exposureDetectionDir)
+                .Where(path => path.EndsWith(".zip"));
             if (pathList.Count() == 0)
             {
                 Debug.Print($"Directoery {_exposureDetectionDir} is empty");
@@ -321,7 +326,9 @@ namespace Chino.Prism.ViewModel
                 Directory.CreateDirectory(_exposureDetectionDir);
             }
 
-            var pathList = Directory.GetFiles(_exposureDetectionDir);
+            var pathList = Directory.GetFiles(_exposureDetectionDir)
+                .Where(path => path.EndsWith(".zip"));
+
             if (pathList.Count() == 0)
             {
                 Debug.Print($"Directoery {_exposureDetectionDir} is empty");
