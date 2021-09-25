@@ -2,6 +2,7 @@
 using DryIoc;
 using Prism.DryIoc;
 using Prism.Ioc;
+using Sample.Common;
 using Xamarin.Forms;
 
 namespace Chino.Prism
@@ -32,7 +33,8 @@ namespace Chino.Prism
             var container = new Container();
             registerPlatformService(container);
 
-            container.Register<IEnServer, EnServer>(Reuse.Singleton);
+            container.Register<IDiagnosisKeyServerRepository, DiagnosisKeyServerRepository>(Reuse.Singleton);
+            container.Register<IExposureDataServerRepository, ExposureDataServerRepository>(Reuse.Singleton);
 
             PrismContainerExtension.Init(container);
             ContainerLocator.SetContainerExtension(() => PrismContainerExtension.Current);

@@ -74,6 +74,7 @@
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExposureNotificationService.cs" />
+    <Compile Include="Service\PlatformPathService.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
@@ -141,5 +142,8 @@
       <Project>{54A7CD23-5653-47B7-A2C9-D5CAC7BE4B2B}</Project>
       <Name>Chino.Prism</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Service\" />
   </ItemGroup>
 </Project>

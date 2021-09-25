@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Chino;
+using Chino.Prism;
+using Chino.Prism.Service;
 using Newtonsoft.Json;
 
 #nullable enable
 
 namespace Sample.Common
 {
-    public interface IExposureDataServer
+    public interface IExposureDataServerRepository
     {
         public Task<ExposureDataResponse?> UploadExposureDataAsync(
             ExposureConfiguration exposureConfiguration,
@@ -44,15 +47,38 @@ namespace Sample.Common
             );
     }
 
-    public class ExposureDataServer : IExposureDataServer
+    public class ExposureDataServerRepository : IExposureDataServerRepository
     {
-        private readonly ExposureDataServerConfiguration _serverConfiguration;
         private readonly HttpClient _client;
+        private readonly string _serverConfigurationPath;
 
-        public ExposureDataServer(ExposureDataServerConfiguration serverConfiguration)
+        public ExposureDataServerRepository(
+            IPlatformPathService platformPathService
+            )
         {
-            _serverConfiguration = serverConfiguration;
             _client = new HttpClient();
+
+            var configurationDir = platformPathService.GetConfigurationPath();
+            if (!Directory.Exists(configurationDir))
+            {
+                Directory.CreateDirectory(configurationDir);
+            }
+            _serverConfigurationPath = Path.Combine(configurationDir, Constants.EXPOSURE_DATA_SERVER_CONFIGURATION_FILENAME);
+        }
+
+        private async Task<ExposureDataServerConfiguration> LoadExposureDataServerConfigurationAsync()
+        {
+            if (File.Exists(_serverConfigurationPath))
+            {
+                return JsonConvert.DeserializeObject<ExposureDataServerConfiguration>(
+                    await File.ReadAllTextAsync(_serverConfigurationPath)
+                    );
+            }
+
+            var serverConfiguration = new ExposureDataServerConfiguration();
+            var json = JsonConvert.SerializeObject(serverConfiguration, Formatting.Indented);
+            await File.WriteAllTextAsync(_serverConfigurationPath, json);
+            return serverConfiguration;
         }
 
         public async Task<ExposureDataResponse?> UploadExposureDataAsync(
@@ -133,10 +159,12 @@ namespace Sample.Common
             ExposureRequest exposureRequest
             )
         {
+            var serverConfiguration = await LoadExposureDataServerConfigurationAsync();
+
             var requestJson = exposureRequest.ToJsonString();
             var httpContent = new StringContent(requestJson);
 
-            Uri uri = new Uri($"{_serverConfiguration.ApiEndpoint}/{_serverConfiguration.ClusterId}/");
+            Uri uri = new Uri($"{serverConfiguration.ApiEndpoint}/{serverConfiguration.ClusterId}/");
 
             try
             {

@@ -24,8 +24,12 @@
   <ItemGroup>
     <Folder Include="ViewModel\" />
     <Folder Include="Model\" />
+    <Folder Include="Repository\" />
+    <Folder Include="Service\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Model\" />
+    <None Remove="Repository\" />
+    <None Remove="Service\" />
   </ItemGroup>
 </Project>
