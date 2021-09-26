@@ -90,7 +90,8 @@ namespace Chino.Prism.Droid
                 var exposureDataResponse = await _exposureDataServerRepository.Value.UploadExposureDataAsync(
                     GetEnClient().ExposureConfiguration,
                     DeviceInfo.Model,
-                    enVersion
+                    enVersion,
+                    exposureSummary, exposureInformations
                     );
 
                 if (exposureDataResponse != null)
@@ -121,7 +122,8 @@ namespace Chino.Prism.Droid
                 var exposureDataResponse = await _exposureDataServerRepository.Value.UploadExposureDataAsync(
                     GetEnClient().ExposureConfiguration,
                     DeviceInfo.Model,
-                    enVersion
+                    enVersion,
+                    dailySummaries, exposureWindows
                     );
 
                 if (exposureDataResponse != null)
